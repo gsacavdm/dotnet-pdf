@@ -3,5 +3,6 @@ obj
 
 .DS_Store
 
-pdfs/*
+src/pdfs/*
+
 !.gitkeep
