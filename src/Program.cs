@@ -3,6 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 
+using CommandLine;
+
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
@@ -13,12 +15,20 @@ namespace dotnet_pdf
   {
     static void Main(string[] args)
     {
-      var pdfPath = @"pdfs/2021-02-05-Regence.pdf";
-      var text = ImportPdf(pdfPath);
+      Options options = null;
+      Parser.Default.ParseArguments<Options>(args)
+        .WithParsed<Options>(o =>
+        {
+          options = o;
+        });
+
+      if (options == null) throw new ArgumentNullException(nameof(options));
+
+      var text = ImportPdf(options.PdfPath);
 
       foreach(var t in text) { Console.WriteLine(t); }
       
-      ExtractRegenceFields(text);
+      //ExtractRegenceFields(text);
     } 
 
     public static IEnumerable<string> ImportPdf(string pdfPath)
@@ -29,12 +39,12 @@ namespace dotnet_pdf
       using var document = new PdfDocument(reader);
       for(var pageNumber = 1; pageNumber < document.GetNumberOfPages(); pageNumber++)
       {
-        var page = document.GetPage(pageNumber);
-        var currentText = PdfTextExtractor.GetTextFromPage(page, new SimpleTextExtractionStrategy());
-        var pageText = Encoding.UTF8.GetString(System.Text.ASCIIEncoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(currentText)));
+      var page = document.GetPage(pageNumber);
+      var currentText = PdfTextExtractor.GetTextFromPage(page, new SimpleTextExtractionStrategy());
+      var pageText = Encoding.UTF8.GetString(System.Text.ASCIIEncoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(currentText)));
 
-        var textRows = pageText.Split("\n");
-        text.AddRange(textRows);
+      var textRows = pageText.Split("\n");
+      text.AddRange(textRows);
       }
 
       return text;
@@ -61,8 +71,8 @@ namespace dotnet_pdf
     {
       if (providerName.Contains(","))
       {
-        var nameParts = providerName.Split(",");
-        providerName = nameParts[1].Trim() + " " + nameParts[0].Trim();
+      var nameParts = providerName.Split(",");
+      providerName = nameParts[1].Trim() + " " + nameParts[0].Trim();
       }
 
       providerName = providerName.Replace(",","");
@@ -73,9 +83,9 @@ namespace dotnet_pdf
       providerName = String.Join(" ", providerName.Split(" ").Where(s => s.Length > 1));
       
       var mappedProviders = new Dictionary<string, string>
-      {      
-        {"Jason Lukas", "Physiatrist"}
-        // ... add more ...
+      {    
+      {"Jason Lukas", "Physiatrist"}
+      // ... add more ...
       };
 
       mappedProviders.TryGetValue(providerName, out var mappedProvider);
@@ -115,16 +125,16 @@ namespace dotnet_pdf
 
       if (!string.IsNullOrEmpty(pharmacyName))
       {
-        dateOfService = dateOfFill;
-        dateProcessed = dateOfFill;
-        providerName = prescriberName;
+      dateOfService = dateOfFill;
+      dateProcessed = dateOfFill;
+      providerName = prescriberName;
       }
 
       providerName = MapProvider(providerName);
 
       if (!string.IsNullOrEmpty(pharmacyName))
       {
-        providerName = $"{providerName} {pharmacyName} {medicationName}";
+      providerName = $"{providerName} {pharmacyName} {medicationName}";
       }
 
       providerName = $"{dateOfService} {providerName} Claim Regence {dateProcessed}.pdf";
