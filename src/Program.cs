@@ -8,8 +8,8 @@ using CommandLine;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
-using System.Globalization;
 
+using Sc.Pdf.Models;
 namespace Sc.Pdf;
 
 public class Program
@@ -23,11 +23,26 @@ public class Program
               options = o;
           });
 
+        if (options == null)
+        {
+            return;
+        }
+
         var text = ImportPdf(options.PdfPath);
 
-        foreach (var t in text) { Console.WriteLine(t); }
+        switch (options.Mode)
+        {
+            case "Regence":
+                var regenceClaim = ExtractRegenceFields(text);
+                regenceClaim.WriteLine();
+                break;
+            default:
+                foreach (var t in text) { Console.WriteLine(t); }
+                break;
 
-        //ExtractRegenceFields(text);
+        }
+
+        //
     }
 
     public static IEnumerable<string> ImportPdf(string pdfPath)
@@ -62,87 +77,38 @@ public class Program
         return textRow;
     }
 
-    public static string ExtractDate(IEnumerable<string> textRows, string searchText)
+    public static DateTime? ExtractDate(IEnumerable<string> textRows, string searchText)
     {
         var couldParse = DateTime.TryParse(ExtractField(textRows, searchText), out var dateTime);
-
-        return couldParse ? dateTime.ToString("yyy-MM-dd", CultureInfo.CurrentCulture) : string.Empty;
+        return couldParse ? dateTime : null;
     }
 
-    public static string MapProvider(string providerName)
+    public static double? ExtractDouble(IEnumerable<string> textRows, string searchText)
     {
-        if (providerName.Contains(','))
-        {
-            var nameParts = providerName.Split(",");
-            providerName = nameParts[1].Trim() + " " + nameParts[0].Trim();
-        }
-
-        providerName = providerName.Replace(",", "");
-        providerName = providerName.Replace(".", "");
-        providerName = providerName.Replace(" Inc ", " ");
-
-        // Remove middle names (e.g. Jason J Lukas -> remove the J)
-        providerName = string.Join(" ", providerName.Split(" ").Where(s => s.Length > 1));
-
-        var mappedProviders = new Dictionary<string, string>
-      {
-      {"Jason Lukas", "Physiatrist"}
-      // ... add more ...
-      };
-
-        mappedProviders.TryGetValue(providerName, out var mappedProvider);
-
-        return mappedProvider ?? providerName;
+        var doubleString = ExtractField(textRows, searchText);
+        doubleString = doubleString.Replace("$", "").Replace(",", "");
+        var couldParse = double.TryParse(doubleString, out var doubleVal);
+        return couldParse ? doubleVal : null;
     }
 
-    public static void ExtractRegenceFields(IEnumerable<string> text)
+    public static RegenceModel ExtractRegenceFields(IEnumerable<string> text)
     {
-        var providerName = ExtractField(text, "Provider name");
-
-        var dateOfService = ExtractDate(text, "Date of service");
-        var dateProcessed = ExtractDate(text, "Date processed");
-        var pharmacyName = ExtractField(text, "Pharmacy name");
-        var dateOfFill = ExtractDate(text, "Date of fill");
-        var medicationName = ExtractField(text, "Medication name").Replace("/", "-");
-        var prescriberName = ExtractField(text, "Prescriber name");
-        var claimNumber = ExtractField(text, "Claim number");
-        var amountBilled = ExtractField(text, "Amount billed");
-        var discountedRate = ExtractField(text, "Your discounted rate");
-        var amountPaid = ExtractField(text, "Amount we paid");
-        var amountYouOwe = ExtractField(text, "Amount you owe");
-
-        Console.WriteLine("==============");
-
-        Console.WriteLine($"Provider name: {providerName}");
-        Console.WriteLine($"Date of service: {dateOfService}");
-        Console.WriteLine($"Pharmacy name: {pharmacyName}");
-        Console.WriteLine($"Date of fill: {dateOfFill}");
-        Console.WriteLine($"Medication name: {medicationName}");
-        Console.WriteLine($"Prescriber name: {prescriberName}");
-        Console.WriteLine($"Claim number: {claimNumber}");
-        Console.WriteLine($"Amount billed: {amountBilled}");
-        Console.WriteLine($"Discounted rate: {discountedRate}");
-        Console.WriteLine($"Amount paid: {amountPaid}");
-        Console.WriteLine($"Amount you owe: {amountYouOwe}");
-
-        if (!string.IsNullOrEmpty(pharmacyName))
+        var model = new RegenceModel
         {
-            dateOfService = dateOfFill;
-            dateProcessed = dateOfFill;
-            providerName = prescriberName;
-        }
+            ProviderName = ExtractField(text, "Provider name"),
+            DateOfService = ExtractDate(text, "Date of service"),
+            DateProcessed = ExtractDate(text, "Date processed"),
+            PharmacyName = ExtractField(text, "Pharmacy name"),
+            DateOfFill = ExtractDate(text, "Date of fill"),
+            MedicationName = ExtractField(text, "Medication name").Replace("/", "-"),
+            PrescriberName = ExtractField(text, "Prescriber name"),
+            ClaimNumber = ExtractField(text, "Claim number"),
+            AmountBilled = ExtractDouble(text, "Amount billed"),
+            DiscountedRate = ExtractDouble(text, "Your discounted rate"),
+            AmountPaid = ExtractDouble(text, "Amount we paid"),
+            AmountYouOwe = ExtractDouble(text, "Amount you owe")
+        };
 
-        providerName = MapProvider(providerName);
-
-        if (!string.IsNullOrEmpty(pharmacyName))
-        {
-            providerName = $"{providerName} {pharmacyName} {medicationName}";
-        }
-
-        providerName = $"{dateOfService} {providerName} Claim Regence {dateProcessed}.pdf";
-
-        Console.WriteLine("==============");
-
-        Console.WriteLine($"Final provider name: {providerName}");
+        return model;
     }
 }
