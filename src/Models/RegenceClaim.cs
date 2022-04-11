@@ -68,7 +68,9 @@ public class RegenceModel
         var mappedProviders = new Dictionary<string, string>
         {
             {"Jason Lukas", "Physiatrist"},
-            {"Labcorp Of America", "Labcorp"}
+            {"Labcorp Of America", "Labcorp"},
+            {"Mary Anderson", "Therapy"},
+            {"Daniel Trautman", "Massage"}
             // ... add more ...
         };
 

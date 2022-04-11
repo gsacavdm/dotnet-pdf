@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Text;
 
 using CommandLine;
@@ -28,21 +30,49 @@ public class Program
             return;
         }
 
-        var text = ImportPdf(options.PdfPath);
-
-        switch (options.Mode)
+        var filePaths = new List<string>();
+        if (!string.IsNullOrEmpty(options.PdfDirectoryPath))
         {
-            case "Regence":
-                var regenceClaim = ExtractRegenceFields(text);
-                regenceClaim.WriteLine();
-                break;
-            default:
-                foreach (var t in text) { Console.WriteLine(t); }
-                break;
-
+            filePaths.AddRange(Directory.EnumerateFiles(options.PdfDirectoryPath, "*.pdf"));
+        }
+        else if (!string.IsNullOrEmpty(options.PdfFilePath))
+        {
+            filePaths.Add(options.PdfFilePath);
+        }
+        else
+        {
+            Console.WriteLine("Please specify either -p or -d");
+            return;
         }
 
-        //
+        foreach (var filePath in filePaths)
+        {
+            var text = ImportPdf(filePath);
+
+            if (options.Mode.StartsWith("Regence", false, CultureInfo.InvariantCulture))
+            {
+                var regenceClaim = ExtractRegenceFields(text);
+                if (options.Mode == "RegenceMove")
+                {
+                    var directoryName = Path.GetDirectoryName(filePath);
+                    var fileName = Path.GetFileName(filePath);
+                    var newFileName = regenceClaim.FileName;
+
+                    var newFilePath = Path.Combine(directoryName, newFileName);
+
+                    Console.WriteLine($"Moving {fileName} to {newFileName}");
+                    File.Move(filePath, newFilePath);
+                }
+                else
+                {
+                    regenceClaim.WriteLine();
+                }
+            }
+            else
+            {
+                foreach (var t in text) { Console.WriteLine(t); }
+            }
+        }
     }
 
     public static IEnumerable<string> ImportPdf(string pdfPath)

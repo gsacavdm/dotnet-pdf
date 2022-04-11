@@ -1,3 +1,3 @@
 ```
-Sc.Pdf -p pdfs/my-file.pdf
+Sc.Pdf -f pdfs/my-file.pdf
 ```
