@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using CommandLine;
 
@@ -68,6 +69,25 @@ public class Program
                     regenceClaim.WriteLine();
                 }
             }
+            else if (options.Mode.StartsWith("Premera", false, CultureInfo.InvariantCulture))
+            {
+                var premeraClaim = ExtractPremeraFields(text);
+                if (options.Mode == "PremeraMove")
+                {
+                    var directoryName = Path.GetDirectoryName(filePath);
+                    var fileName = Path.GetFileName(filePath);
+                    var newFileName = premeraClaim.FileName;
+
+                    var newFilePath = Path.Combine(directoryName, newFileName);
+
+                    Console.WriteLine($"Moving {fileName} to {newFileName}");
+                    File.Move(filePath, newFilePath);
+                }
+                else
+                {
+                    premeraClaim.WriteLine();
+                }
+            }
             else
             {
                 foreach (var t in text) { Console.WriteLine(t); }
@@ -94,7 +114,14 @@ public class Program
         return text;
     }
 
-    public static string ExtractField(IEnumerable<string> textRows, string searchText)
+    public static string ExtractFieldByPosition(IEnumerable<string> textRows, int position)
+    {
+        var textRow = textRows.ElementAtOrDefault(position);
+
+        return textRow ?? string.Empty;
+    }
+
+    public static string ExtractFieldByStartsWith(IEnumerable<string> textRows, string searchText)
     {
         var textRow = textRows.FirstOrDefault(s => s.StartsWith(searchText, StringComparison.InvariantCulture));
 
@@ -107,37 +134,69 @@ public class Program
         return textRow;
     }
 
-    public static DateTime? ExtractDate(IEnumerable<string> textRows, string searchText)
+    public static DateTime? ExtractDateByStartsWith(IEnumerable<string> textRows, string searchText)
     {
-        var couldParse = DateTime.TryParse(ExtractField(textRows, searchText), out var dateTime);
+        var couldParse = DateTime.TryParse(ExtractFieldByStartsWith(textRows, searchText), out var dateTime);
         return couldParse ? dateTime : null;
     }
 
-    public static double? ExtractDouble(IEnumerable<string> textRows, string searchText)
+    public static double? ExtractDoubleByStartsWith(IEnumerable<string> textRows, string searchText)
     {
-        var doubleString = ExtractField(textRows, searchText);
+        var doubleString = ExtractFieldByStartsWith(textRows, searchText);
         doubleString = doubleString.Replace("$", "").Replace(",", "");
         var couldParse = double.TryParse(doubleString, out var doubleVal);
         return couldParse ? doubleVal : null;
     }
 
-    public static RegenceModel ExtractRegenceFields(IEnumerable<string> text)
+    public static RegenceClaim ExtractRegenceFields(IEnumerable<string> text)
     {
-        var model = new RegenceModel
+        var model = new RegenceClaim
         {
-            ProviderName = ExtractField(text, "Provider name"),
-            DateOfService = ExtractDate(text, "Date of service"),
-            DateProcessed = ExtractDate(text, "Date processed"),
-            PharmacyName = ExtractField(text, "Pharmacy name"),
-            DateOfFill = ExtractDate(text, "Date of fill"),
-            MedicationName = ExtractField(text, "Medication name").Replace("/", "-"),
-            PrescriberName = ExtractField(text, "Prescriber name"),
-            ClaimNumber = ExtractField(text, "Claim number"),
-            AmountBilled = ExtractDouble(text, "Amount billed"),
-            DiscountedRate = ExtractDouble(text, "Your discounted rate"),
-            AmountPaid = ExtractDouble(text, "Amount we paid"),
-            AmountYouOwe = ExtractDouble(text, "Amount you owe")
+            ProviderName = ExtractFieldByStartsWith(text, "Provider name"),
+            DateOfService = ExtractDateByStartsWith(text, "Date of service"),
+            DateProcessed = ExtractDateByStartsWith(text, "Date processed"),
+            PharmacyName = ExtractFieldByStartsWith(text, "Pharmacy name"),
+            DateOfFill = ExtractDateByStartsWith(text, "Date of fill"),
+            MedicationName = ExtractFieldByStartsWith(text, "Medication name").Replace("/", "-"),
+            PrescriberName = ExtractFieldByStartsWith(text, "Prescriber name"),
+            ClaimNumber = ExtractFieldByStartsWith(text, "Claim number"),
+            AmountBilled = ExtractDoubleByStartsWith(text, "Amount billed"),
+            DiscountedRate = ExtractDoubleByStartsWith(text, "Your discounted rate"),
+            AmountPaid = ExtractDoubleByStartsWith(text, "Amount we paid"),
+            AmountYouOwe = ExtractDoubleByStartsWith(text, "Amount you owe")
         };
+
+        return model;
+    }
+
+    public static PremeraClaim ExtractPremeraFields(IEnumerable<string> text)
+    {
+
+        var model = new PremeraClaim();
+
+        foreach (var line in text)
+        {
+            if (line.StartsWith("For services provided by", false, CultureInfo.InvariantCulture))
+            {
+                var tmp = line.Replace("For services provided by ", "");
+                var parts = tmp.Split(" on ");
+
+                if (parts.Length == 2)
+                {
+                    model.ProviderName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(parts[0].ToLower(CultureInfo.InvariantCulture));
+                    model.DateOfService = DateTime.TryParse(parts[1], out var date) ? date : null;
+                }
+            }
+            else if (Regex.IsMatch(line, "[a-zA-Z]+ [0-9]{2}, [0-9]{4}") && model.DateProcessed == null)
+            {
+                model.DateProcessed = DateTime.TryParse(line, out var date) ? date : null;
+            }
+            else if (Regex.IsMatch(line, "Claim #"))
+            {
+                var parts = line.Split("# ");
+                model.ClaimNumber = parts[1].Split(",")[0];
+            }
+        }
 
         return model;
     }
