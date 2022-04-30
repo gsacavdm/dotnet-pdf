@@ -20,6 +20,8 @@
       "args": [
         "publish",
         "${workspaceFolder}/src/Sc.Pdf.csproj",
+        "-c",
+        "Release",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
