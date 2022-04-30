@@ -31,6 +31,9 @@ public class Program
             return;
         }
 
+        // TODO: Convert to option
+        var overwriteOnMove = false;
+
         var filePaths = new List<string>();
         if (!string.IsNullOrEmpty(options.PdfDirectoryPath))
         {
@@ -59,10 +62,16 @@ public class Program
                     var fileName = Path.GetFileName(filePath);
                     var newFileName = regenceClaim.FileName;
 
+                    if (string.IsNullOrEmpty(newFileName))
+                    {
+                        Console.WriteLine($"Couldn't extract {fileName}, skipping...");
+                        continue;
+                    }
+
                     var newFilePath = Path.Combine(directoryName, newFileName);
 
                     Console.WriteLine($"Moving {fileName} to {newFileName}");
-                    File.Move(filePath, newFilePath);
+                    File.Move(filePath, newFilePath, overwriteOnMove);
                 }
                 else
                 {
@@ -81,7 +90,7 @@ public class Program
                     var newFilePath = Path.Combine(directoryName, newFileName);
 
                     Console.WriteLine($"Moving {fileName} to {newFileName}");
-                    File.Move(filePath, newFilePath);
+                    File.Move(filePath, newFilePath, overwriteOnMove);
                 }
                 else
                 {
