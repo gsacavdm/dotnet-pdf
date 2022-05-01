@@ -4,7 +4,7 @@ The simplest execution takes a file and prints out each line of text
 ./Sc.Pdf -f pdfs/my-file.pdf
 ```
 
-The more speccialized execution modes are used for parsing insurance EoBs and renaming the downloaded EoBs which have random file names to file names following my naming convention
+The more specialized execution modes are used for parsing insurance EoBs and renaming the downloaded EoBs which have random file names to file names following my naming convention
 ```
 ./Sc.Pdf -d $(pwd) -m RegenceMove
 ```
@@ -13,7 +13,7 @@ The more speccialized execution modes are used for parsing insurance EoBs and re
 
 ## Bash
 
-### Compare Files Between Tow Directories
+### Compare Files Between Two Directories
 This script takes two directories and compares the list of files in each. It only compares which files exist on each folder and does NOT compare the contents of the files. This script is helpful when processing insurance EoBs, to know which of the newly downloaded and renamed files are new.
 ```
 sourcePath=
