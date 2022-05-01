@@ -44,7 +44,7 @@ public class RegenceClaim
                 providerName = $"{providerName} {this.PharmacyName} {this.MedicationName}";
             }
 
-            return string.IsNullOrEmpty(providerName) ? string.Empty : $"{dateOfService.ToDateString()} {providerName} Claim Regence {dateProcessed.ToDateString()}.pdf";
+            return string.IsNullOrEmpty(providerName) ? string.Empty : $"{dateOfService.ToDateString()} {providerName} Claim Regence {this.ClaimNumber} {dateProcessed.ToDateString()}.pdf";
         }
     }
 
