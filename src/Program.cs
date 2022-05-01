@@ -71,7 +71,14 @@ public class Program
                     var newFilePath = Path.Combine(directoryName, newFileName);
 
                     Console.WriteLine($"Moving {fileName} to {newFileName}");
-                    File.Move(filePath, newFilePath, overwriteOnMove);
+                    try
+                    {
+                        File.Move(filePath, newFilePath, overwriteOnMove);
+                    }
+                    catch (IOException ioex)
+                    {
+                        Console.WriteLine($"Unable to move {fileName} due to exception \"{ioex.Message}\"");
+                    }
                 }
                 else
                 {
@@ -90,7 +97,14 @@ public class Program
                     var newFilePath = Path.Combine(directoryName, newFileName);
 
                     Console.WriteLine($"Moving {fileName} to {newFileName}");
-                    File.Move(filePath, newFilePath, overwriteOnMove);
+                    try
+                    {
+                        File.Move(filePath, newFilePath, overwriteOnMove);
+                    }
+                    catch (IOException ioex)
+                    {
+                        Console.WriteLine($"Unable to move {fileName} due to exception \"{ioex.Message}\"");
+                    }
                 }
                 else
                 {
