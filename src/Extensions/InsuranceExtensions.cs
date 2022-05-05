@@ -26,6 +26,7 @@ public static class InsuranceExtensions
             {"Jason Lukas", "Physiatrist"},
             {"Labcorp Of America", "Labcorp"},
             {"Mary Anderson", "Therapy"},
+            {"Andrew Appelbaum", "Family Doctor"},
             {"Daniel Trautman", "Massage"}
             // ... add more ...
         };
