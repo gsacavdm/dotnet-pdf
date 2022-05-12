@@ -124,7 +124,7 @@ public class Program
 
         using var reader = new PdfReader(pdfPath);
         using var document = new PdfDocument(reader);
-        for (var pageNumber = 1; pageNumber < document.GetNumberOfPages(); pageNumber++)
+        for (var pageNumber = 1; pageNumber <= document.GetNumberOfPages(); pageNumber++)
         {
             var page = document.GetPage(pageNumber);
             var currentText = PdfTextExtractor.GetTextFromPage(page, new SimpleTextExtractionStrategy());
@@ -179,6 +179,8 @@ public class Program
             DateOfService = ExtractDateByStartsWith(text, "Date of service"),
             DateProcessed = ExtractDateByStartsWith(text, "Date processed"),
             PharmacyName = ExtractFieldByStartsWith(text, "Pharmacy name"),
+            NdcNumber = ExtractFieldByStartsWith(text, "NDC number"),
+            PrescriptionNumber = ExtractFieldByStartsWith(text, "Prescription number"),
             DateOfFill = ExtractDateByStartsWith(text, "Date of fill"),
             MedicationName = ExtractFieldByStartsWith(text, "Medication name").Replace("/", "-"),
             PrescriberName = ExtractFieldByStartsWith(text, "Prescriber name"),

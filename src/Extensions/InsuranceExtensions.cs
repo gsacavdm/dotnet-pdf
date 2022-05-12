@@ -27,7 +27,9 @@ public static class InsuranceExtensions
             {"Labcorp Of America", "Labcorp"},
             {"Mary Anderson", "Therapy"},
             {"Andrew Appelbaum", "Family Doctor"},
-            {"Daniel Trautman", "Massage"}
+            {"Andrew Mark Appelbaum", "Family Doctor"},
+            {"Daniel Trautman", "Massage"},
+            {"Na No Provider Found", "No Provider"}
             // ... add more ...
         };
 
