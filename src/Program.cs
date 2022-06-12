@@ -45,7 +45,7 @@ public class Program
         }
         else
         {
-            Console.WriteLine("Please specify either -p or -d");
+            Console.WriteLine("Please specify either -f or -d");
             return;
         }
 
