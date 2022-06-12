@@ -16,8 +16,8 @@ The more specialized execution modes are used for parsing insurance EoBs and ren
 ### Compare Files Between Two Directories
 This script takes two directories and compares the list of files in each. It only compares which files exist on each folder and does NOT compare the contents of the files. This script is helpful when processing insurance EoBs, to know which of the newly downloaded and renamed files are new.
 ```
-sourcePath=
-oneDrivePath=
+sourcePath=$(pwd)
+oneDrivePath=~/OneDrive/Receipts/Health/Karla/2022
 
 diff <(find $sourcePath -exec basename {} \; | sort) <(find $oneDrivePath -exec basename {} \; | sort) --unchanged-line-format="BOTH: %L" --old-line-format="MISSING: %L" --new-line-format=""
 ```
