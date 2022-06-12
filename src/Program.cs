@@ -111,6 +111,32 @@ public class Program
                     premeraClaim.WriteLine();
                 }
             }
+            else if (options.Mode.StartsWith("Cigna", false, CultureInfo.InvariantCulture))
+            {
+                var premeraClaim = ExtractCignaFields(text);
+                if (options.Mode == "CignaMove")
+                {
+                    var directoryName = Path.GetDirectoryName(filePath);
+                    var fileName = Path.GetFileName(filePath);
+                    var newFileName = premeraClaim.FileName;
+
+                    var newFilePath = Path.Combine(directoryName, newFileName);
+
+                    Console.WriteLine($"Moving {fileName} to {newFileName}");
+                    try
+                    {
+                        File.Move(filePath, newFilePath, overwriteOnMove);
+                    }
+                    catch (IOException ioex)
+                    {
+                        Console.WriteLine($"Unable to move {fileName} due to exception \"{ioex.Message}\"");
+                    }
+                }
+                else
+                {
+                    premeraClaim.WriteLine();
+                }
+            }
             else
             {
                 foreach (var t in text) { Console.WriteLine(t); }
@@ -144,6 +170,25 @@ public class Program
         return textRow ?? string.Empty;
     }
 
+    public static string ExtractFieldNextLineByEquals(IEnumerable<string> textRows, string searchText)
+    {
+        var searchLine = textRows.FirstOrDefault(line => line.Equals(searchText, StringComparison.Ordinal));
+        if (searchLine == null)
+        {
+            return string.Empty;
+        }
+
+        var searchPosition = Array.IndexOf(textRows.ToArray(), searchLine);
+        var textRow = textRows.ElementAtOrDefault(searchPosition + 1);
+        return textRow ?? string.Empty;
+    }
+
+    public static DateTime? ParseDate(string dateText)
+    {
+        var couldParse = DateTime.TryParse(dateText, out var dateTime);
+        return couldParse ? dateTime : null;
+    }
+
     public static string ExtractFieldByStartsWith(IEnumerable<string> textRows, string searchText)
     {
         var textRow = textRows.FirstOrDefault(s => s.StartsWith(searchText, StringComparison.InvariantCulture));
@@ -163,9 +208,8 @@ public class Program
         return couldParse ? dateTime : null;
     }
 
-    public static double? ExtractDoubleByStartsWith(IEnumerable<string> textRows, string searchText)
+    public static double? ParseDouble(string doubleString)
     {
-        var doubleString = ExtractFieldByStartsWith(textRows, searchText);
         doubleString = doubleString.Replace("$", "").Replace(",", "");
         var couldParse = double.TryParse(doubleString, out var doubleVal);
         return couldParse ? doubleVal : null;
@@ -176,8 +220,8 @@ public class Program
         var model = new RegenceClaim
         {
             ProviderName = ExtractFieldByStartsWith(text, "Provider name"),
-            DateOfService = ExtractDateByStartsWith(text, "Date of service"),
-            DateProcessed = ExtractDateByStartsWith(text, "Date processed"),
+            DateOfService = ParseDate(ExtractFieldByStartsWith(text, "Date of service")),
+            DateProcessed = ParseDate(ExtractFieldByStartsWith(text, "Date processed")),
             PharmacyName = ExtractFieldByStartsWith(text, "Pharmacy name"),
             NdcNumber = ExtractFieldByStartsWith(text, "NDC number"),
             PrescriptionNumber = ExtractFieldByStartsWith(text, "Prescription number"),
@@ -185,10 +229,10 @@ public class Program
             MedicationName = ExtractFieldByStartsWith(text, "Medication name").Replace("/", "-"),
             PrescriberName = ExtractFieldByStartsWith(text, "Prescriber name"),
             ClaimNumber = ExtractFieldByStartsWith(text, "Claim number"),
-            AmountBilled = ExtractDoubleByStartsWith(text, "Amount billed"),
-            DiscountedRate = ExtractDoubleByStartsWith(text, "Your discounted rate"),
-            AmountPaid = ExtractDoubleByStartsWith(text, "Amount we paid"),
-            AmountYouOwe = ExtractDoubleByStartsWith(text, "Amount you owe")
+            AmountBilled = ParseDouble(ExtractFieldByStartsWith(text, "Amount billed")),
+            DiscountedRate = ParseDouble(ExtractFieldByStartsWith(text, "Your discounted rate")),
+            AmountPaid = ParseDouble(ExtractFieldByStartsWith(text, "Amount we paid")),
+            AmountYouOwe = ParseDouble(ExtractFieldByStartsWith(text, "Amount you owe"))
         };
 
         return model;
@@ -222,6 +266,34 @@ public class Program
                 model.ClaimNumber = parts[1].Split(",")[0];
             }
         }
+
+        return model;
+    }
+
+    public static CignaClaim ExtractCignaFields(IEnumerable<string> text)
+    {
+
+        var claimNumber = ExtractFieldNextLineByEquals(text, "Claim # / ID").Split(" ")[0];
+        var providerName = ExtractFieldByStartsWith(text, "for services provided by");
+        var dateOfService = ParseDate(ExtractFieldNextLineByEquals(text, "Service date"));
+        var amountBilled = ParseDouble(ExtractFieldNextLineByEquals(text, "Amount Billed"));
+        var discount = ParseDouble(ExtractFieldNextLineByEquals(text, "Discount"));
+        var amountPaid = ParseDouble(ExtractFieldNextLineByEquals(text, "paid"));
+        var amountYouOwe = ParseDouble(ExtractFieldNextLineByEquals(text, "What I Owe"));
+        var dateProcessedLine = ExtractFieldByStartsWith(text, "Cigna received this claim on");
+        var dateProcessed = ParseDate(dateProcessedLine.Split("processed it on ")[1].Replace(".", ""));
+
+        var model = new CignaClaim
+        {
+            ClaimNumber = claimNumber,
+            ProviderName = providerName,
+            DateOfService = dateOfService,
+            AmountBilled = amountBilled,
+            Discount = discount,
+            AmountPaid = amountPaid,
+            AmountYouOwe = amountYouOwe,
+            DateProcessed = dateProcessed
+        };
 
         return model;
     }

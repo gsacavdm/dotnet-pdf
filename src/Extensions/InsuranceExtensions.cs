@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Sc.Pdf.Extensions;
@@ -19,7 +20,10 @@ public static class InsuranceExtensions
         providerName = providerName.Replace(" Inc ", " ");
 
         // Remove middle names (e.g. Jason J Lukas -> remove the J)
-        providerName = string.Join(" ", providerName.Split(" ").Where(s => s.Length > 1));
+        // Remove professional abbreviations (e.g. Md, Po, Pt)
+        providerName = string.Join(" ", providerName.Split(" ").Where(s => s.Length > 2));
+
+        providerName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(providerName.ToLower(CultureInfo.InvariantCulture));
 
         var mappedProviders = new Dictionary<string, string>
         {

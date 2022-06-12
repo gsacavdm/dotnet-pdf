@@ -13,6 +13,6 @@ public class Options
     [Option('d', "pdfDirectoryPath", HelpText = "Path to directory with source PDF files.")]
     public string PdfDirectoryPath { set; get; }
 
-    [Option('m', "mode", Default = "Simple", HelpText = "One of 'Simple' (Default), 'Regence', 'Premera', 'RegenceMove', 'PremeraMove'.")]
+    [Option('m', "mode", Default = "Simple", HelpText = "One of 'Simple' (Default), 'Regence', 'Premera', 'Cigna', 'RegenceMove', 'PremeraMove', 'CignaMove'.")]
     public string Mode { set; get; }
 }
