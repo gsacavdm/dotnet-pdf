@@ -11,7 +11,7 @@ using CommandLine;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
-
+using Sc.Pdf.Extensions;
 using Sc.Pdf.Models;
 namespace Sc.Pdf;
 
@@ -56,6 +56,11 @@ public class Program
             if (options.Mode.StartsWith("Regence", false, CultureInfo.InvariantCulture))
             {
                 var regenceClaim = ExtractRegenceFields(text);
+                if (regenceClaim.IsInvalid)
+                {
+                    Console.WriteLine($"Couldn't extract {filePath}, skipping...");
+                    continue;
+                }
                 if (options.Mode == "RegenceMove")
                 {
                     var directoryName = Path.GetDirectoryName(filePath);
@@ -82,12 +87,17 @@ public class Program
                 }
                 else
                 {
-                    regenceClaim.WriteLine();
+                    regenceClaim.WriteCsv();
                 }
             }
             else if (options.Mode.StartsWith("Premera", false, CultureInfo.InvariantCulture))
             {
                 var premeraClaim = ExtractPremeraFields(text);
+                if (premeraClaim.IsInvalid)
+                {
+                    Console.WriteLine($"Couldn't extract {filePath}, skipping...");
+                    continue;
+                }
                 if (options.Mode == "PremeraMove")
                 {
                     var directoryName = Path.GetDirectoryName(filePath);
@@ -108,7 +118,7 @@ public class Program
                 }
                 else
                 {
-                    premeraClaim.WriteLine();
+                    premeraClaim.WriteCsv();
                 }
             }
             else if (options.Mode.StartsWith("Cigna", false, CultureInfo.InvariantCulture))
@@ -226,13 +236,14 @@ public class Program
             NdcNumber = ExtractFieldByStartsWith(text, "NDC number"),
             PrescriptionNumber = ExtractFieldByStartsWith(text, "Prescription number"),
             DateOfFill = ExtractDateByStartsWith(text, "Date of fill"),
-            MedicationName = ExtractFieldByStartsWith(text, "Medication name").Replace("/", "-"),
+            MedicationName = ExtractFieldByStartsWith(text, "Medication name").Replace("/", "-").Capitalize(),
             PrescriberName = ExtractFieldByStartsWith(text, "Prescriber name"),
             ClaimNumber = ExtractFieldByStartsWith(text, "Claim number"),
             AmountBilled = ParseDouble(ExtractFieldByStartsWith(text, "Amount billed")),
             DiscountedRate = ParseDouble(ExtractFieldByStartsWith(text, "Your discounted rate")),
             AmountPaid = ParseDouble(ExtractFieldByStartsWith(text, "Amount we paid")),
             AmountYouOwe = ParseDouble(ExtractFieldByStartsWith(text, "Amount you owe"))
+                ?? ParseDouble(ExtractFieldByStartsWith(text, "Amount you may owe"))
         };
 
         return model;
@@ -253,6 +264,11 @@ public class Program
                 if (parts.Length == 2)
                 {
                     model.ProviderName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(parts[0].ToLower(CultureInfo.InvariantCulture));
+
+                    // This will be inaccurate some time as there are a few EoBs that
+                    // cover services across multiple dates. This line will still exist
+                    // and have a single date (the last one in the grid with all the services listed)
+                    // Dealing with these kinds of EoBs warrants a bigger refactor...
                     model.DateOfService = DateTime.TryParse(parts[1], out var date) ? date : null;
                 }
             }
@@ -265,6 +281,21 @@ public class Program
                 var parts = line.Split("# ");
                 model.ClaimNumber = parts[1].Split(",")[0];
             }
+            else if (line.StartsWith("Totals", false, CultureInfo.InvariantCulture))
+            {
+                // Indexes would need to be +1 from the other rows that aren't the total
+                // as those include a column on position 1 with the date of service.
+                var amounts = line.Split(" ");
+                model.AmountBilled = ParseDouble(amounts[1]);
+                model.NetworkDiscount = ParseDouble(amounts[2]);
+                model.PaidByHealthPlan = ParseDouble(amounts[3]);
+                model.FromAnotherSource = ParseDouble(amounts[4]);
+                model.TotalPlanDiscountsAndPayments = ParseDouble(amounts[5]);
+                model.Deductible = ParseDouble(amounts[6]);
+                model.Coinsurance = ParseDouble(amounts[7]);
+                model.NotCovered = ParseDouble(amounts[8]);
+                model.YourResponsibility = ParseDouble(amounts[9]);
+            }
         }
 
         return model;
@@ -275,11 +306,19 @@ public class Program
 
         var claimNumber = ExtractFieldNextLineByEquals(text, "Claim # / ID").Split(" ")[0];
         var providerName = ExtractFieldByStartsWith(text, "for services provided by");
-        var dateOfService = ParseDate(ExtractFieldNextLineByEquals(text, "Service date"));
+
+        var dateOfServiceLine = ExtractFieldNextLineByEquals(text, "Service date");
+        if (string.IsNullOrEmpty(dateOfServiceLine))
+        {
+            dateOfServiceLine = ExtractFieldNextLineByEquals(text, "Service dates");
+        }
+        var dateOfService = ParseDate(dateOfServiceLine.Split(" - ")[0]);
+
         var amountBilled = ParseDouble(ExtractFieldNextLineByEquals(text, "Amount Billed"));
         var discount = ParseDouble(ExtractFieldNextLineByEquals(text, "Discount"));
         var amountPaid = ParseDouble(ExtractFieldNextLineByEquals(text, "paid"));
         var amountYouOwe = ParseDouble(ExtractFieldNextLineByEquals(text, "What I Owe"));
+
         var dateProcessedLine = ExtractFieldByStartsWith(text, "Cigna received this claim on");
         var dateProcessed = ParseDate(dateProcessedLine.Split("processed it on ")[1].Replace(".", ""));
 

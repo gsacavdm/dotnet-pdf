@@ -56,6 +56,8 @@ public class RegenceClaim
         }
     }
 
+    public bool IsInvalid => this.AmountYouOwe == null;
+
     public void WriteLine()
     {
         Console.WriteLine("==============");
@@ -78,5 +80,25 @@ public class RegenceClaim
         Console.WriteLine("==============");
 
         Console.WriteLine($"Final provider name: {this.FileName}");
+    }
+
+    public void WriteCsv()
+    {
+        Console.Write("\"" + this.ProviderName + "\",");
+        Console.Write("\"" + this.DateOfService + "\",");
+        Console.Write("\"" + this.DateProcessed + "\",");
+        Console.Write("\"" + this.PharmacyName + "\",");
+        Console.Write("\"" + this.DateOfFill + "\",");
+        Console.Write("\"" + this.MedicationName + "\",");
+        Console.Write("\"" + this.PrescriberName + "\",");
+        Console.Write("\"" + this.PrescriptionNumber + "\",");
+        Console.Write("\"" + this.NdcNumber + "\",");
+        Console.Write("\"" + this.ClaimNumber + "\",");
+        Console.Write("\"" + this.AmountBilled + "\",");
+        Console.Write("\"" + this.DiscountedRate + "\",");
+        Console.Write("\"" + this.AmountPaid + "\",");
+        Console.Write("\"" + this.AmountYouOwe + "\"");
+
+        Console.WriteLine();
     }
 }
