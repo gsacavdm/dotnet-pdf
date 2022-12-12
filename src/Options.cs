@@ -15,4 +15,7 @@ public class Options
 
     [Option('m', "mode", Default = "Simple", HelpText = "One of 'Simple' (Default), 'Regence', 'Premera', 'Cigna', 'RegenceMove', 'PremeraMove', 'CignaMove'.")]
     public string Mode { set; get; }
+
+    [Option('o', "overwrite", Required = false, HelpText = "Overwrite file if exists. Applicable only for move operations.")]
+    public bool Overwrite { set; get; }
 }

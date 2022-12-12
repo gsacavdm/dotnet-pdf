@@ -31,8 +31,7 @@ public class Program
             return;
         }
 
-        // TODO: Convert to option
-        var overwriteOnMove = false;
+        var overwriteOnMove = options.Overwrite;
 
         var filePaths = new List<string>();
         if (!string.IsNullOrEmpty(options.PdfDirectoryPath))
@@ -53,103 +52,52 @@ public class Program
         {
             var text = ImportPdf(filePath);
 
+            IClaim claim;
             if (options.Mode.StartsWith("Regence", false, CultureInfo.InvariantCulture))
             {
-                var regenceClaim = ExtractRegenceFields(text);
-                if (regenceClaim.IsInvalid)
-                {
-                    Console.WriteLine($"Couldn't extract {filePath}, skipping...");
-                    continue;
-                }
-                if (options.Mode == "RegenceMove")
-                {
-                    var directoryName = Path.GetDirectoryName(filePath);
-                    var fileName = Path.GetFileName(filePath);
-                    var newFileName = regenceClaim.FileName;
-
-                    if (string.IsNullOrEmpty(newFileName))
-                    {
-                        Console.WriteLine($"Couldn't extract {fileName}, skipping...");
-                        continue;
-                    }
-
-                    var newFilePath = Path.Combine(directoryName, newFileName);
-
-                    Console.WriteLine($"Moving {fileName} to {newFileName}");
-                    try
-                    {
-                        File.Move(filePath, newFilePath, overwriteOnMove);
-                    }
-                    catch (IOException ioex)
-                    {
-                        Console.WriteLine($"Unable to move {fileName} due to exception \"{ioex.Message}\"");
-                    }
-                }
-                else
-                {
-                    regenceClaim.WriteCsv();
-                }
+                claim = new RegenceClaim(text);
             }
             else if (options.Mode.StartsWith("Premera", false, CultureInfo.InvariantCulture))
             {
-                var premeraClaim = ExtractPremeraFields(text);
-                if (premeraClaim.IsInvalid)
-                {
-                    Console.WriteLine($"Couldn't extract {filePath}, skipping...");
-                    continue;
-                }
-                if (options.Mode == "PremeraMove")
-                {
-                    var directoryName = Path.GetDirectoryName(filePath);
-                    var fileName = Path.GetFileName(filePath);
-                    var newFileName = premeraClaim.FileName;
-
-                    var newFilePath = Path.Combine(directoryName, newFileName);
-
-                    Console.WriteLine($"Moving {fileName} to {newFileName}");
-                    try
-                    {
-                        File.Move(filePath, newFilePath, overwriteOnMove);
-                    }
-                    catch (IOException ioex)
-                    {
-                        Console.WriteLine($"Unable to move {fileName} due to exception \"{ioex.Message}\"");
-                    }
-                }
-                else
-                {
-                    premeraClaim.WriteCsv();
-                }
+                claim = new PremeraClaim(text);
             }
             else if (options.Mode.StartsWith("Cigna", false, CultureInfo.InvariantCulture))
             {
-                var premeraClaim = ExtractCignaFields(text);
-                if (options.Mode == "CignaMove")
-                {
-                    var directoryName = Path.GetDirectoryName(filePath);
-                    var fileName = Path.GetFileName(filePath);
-                    var newFileName = premeraClaim.FileName;
-
-                    var newFilePath = Path.Combine(directoryName, newFileName);
-
-                    Console.WriteLine($"Moving {fileName} to {newFileName}");
-                    try
-                    {
-                        File.Move(filePath, newFilePath, overwriteOnMove);
-                    }
-                    catch (IOException ioex)
-                    {
-                        Console.WriteLine($"Unable to move {fileName} due to exception \"{ioex.Message}\"");
-                    }
-                }
-                else
-                {
-                    premeraClaim.WriteLine();
-                }
+                claim = new CignaClaim(text);
             }
             else
             {
                 foreach (var t in text) { Console.WriteLine(t); }
+                return;
+            }
+
+            if (options.Mode.EndsWith("Move", true, CultureInfo.InvariantCulture))
+            {
+                var directoryName = Path.GetDirectoryName(filePath);
+                var fileName = Path.GetFileName(filePath);
+                var newFileName = claim.FileName;
+
+                if (!claim.IsValid || string.IsNullOrEmpty(newFileName))
+                {
+                    Console.WriteLine($"Couldn't extract {fileName}, skipping...");
+                    continue;
+                }
+
+                var newFilePath = Path.Combine(directoryName, newFileName);
+
+                Console.WriteLine($"Moving {fileName} to {newFileName}");
+                try
+                {
+                    File.Move(filePath, newFilePath, overwriteOnMove);
+                }
+                catch (IOException ioex)
+                {
+                    Console.WriteLine($"Unable to move {fileName} due to exception \"{ioex.Message}\"");
+                }
+            }
+            else
+            {
+                claim.WriteCsv();
             }
         }
     }
@@ -171,169 +119,5 @@ public class Program
         }
 
         return text;
-    }
-
-    public static string ExtractFieldByPosition(IEnumerable<string> textRows, int position)
-    {
-        var textRow = textRows.ElementAtOrDefault(position);
-
-        return textRow ?? string.Empty;
-    }
-
-    public static string ExtractFieldNextLineByEquals(IEnumerable<string> textRows, string searchText)
-    {
-        var searchLine = textRows.FirstOrDefault(line => line.Equals(searchText, StringComparison.Ordinal));
-        if (searchLine == null)
-        {
-            return string.Empty;
-        }
-
-        var searchPosition = Array.IndexOf(textRows.ToArray(), searchLine);
-        var textRow = textRows.ElementAtOrDefault(searchPosition + 1);
-        return textRow ?? string.Empty;
-    }
-
-    public static DateTime? ParseDate(string dateText)
-    {
-        var couldParse = DateTime.TryParse(dateText, out var dateTime);
-        return couldParse ? dateTime : null;
-    }
-
-    public static string ExtractFieldByStartsWith(IEnumerable<string> textRows, string searchText)
-    {
-        var textRow = textRows.FirstOrDefault(s => s.StartsWith(searchText, StringComparison.InvariantCulture));
-
-        if (textRow == null)
-        {
-            return string.Empty;
-        }
-
-        textRow = textRow.Replace(searchText, "").Trim();
-        return textRow;
-    }
-
-    public static DateTime? ExtractDateByStartsWith(IEnumerable<string> textRows, string searchText)
-    {
-        var couldParse = DateTime.TryParse(ExtractFieldByStartsWith(textRows, searchText), out var dateTime);
-        return couldParse ? dateTime : null;
-    }
-
-    public static double? ParseDouble(string doubleString)
-    {
-        doubleString = doubleString.Replace("$", "").Replace(",", "");
-        var couldParse = double.TryParse(doubleString, out var doubleVal);
-        return couldParse ? doubleVal : null;
-    }
-
-    public static RegenceClaim ExtractRegenceFields(IEnumerable<string> text)
-    {
-        var model = new RegenceClaim
-        {
-            ProviderName = ExtractFieldByStartsWith(text, "Provider name"),
-            DateOfService = ParseDate(ExtractFieldByStartsWith(text, "Date of service")),
-            DateProcessed = ParseDate(ExtractFieldByStartsWith(text, "Date processed")),
-            PharmacyName = ExtractFieldByStartsWith(text, "Pharmacy name"),
-            NdcNumber = ExtractFieldByStartsWith(text, "NDC number"),
-            PrescriptionNumber = ExtractFieldByStartsWith(text, "Prescription number"),
-            DateOfFill = ExtractDateByStartsWith(text, "Date of fill"),
-            MedicationName = ExtractFieldByStartsWith(text, "Medication name").Replace("/", "-").Capitalize(),
-            PrescriberName = ExtractFieldByStartsWith(text, "Prescriber name"),
-            ClaimNumber = ExtractFieldByStartsWith(text, "Claim number"),
-            AmountBilled = ParseDouble(ExtractFieldByStartsWith(text, "Amount billed")),
-            DiscountedRate = ParseDouble(ExtractFieldByStartsWith(text, "Your discounted rate")),
-            AmountPaid = ParseDouble(ExtractFieldByStartsWith(text, "Amount we paid")),
-            AmountYouOwe = ParseDouble(ExtractFieldByStartsWith(text, "Amount you owe"))
-                ?? ParseDouble(ExtractFieldByStartsWith(text, "Amount you may owe"))
-        };
-
-        return model;
-    }
-
-    public static PremeraClaim ExtractPremeraFields(IEnumerable<string> text)
-    {
-
-        var model = new PremeraClaim();
-
-        foreach (var line in text)
-        {
-            if (line.StartsWith("For services provided by", false, CultureInfo.InvariantCulture))
-            {
-                var tmp = line.Replace("For services provided by ", "");
-                var parts = tmp.Split(" on ");
-
-                if (parts.Length == 2)
-                {
-                    model.ProviderName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(parts[0].ToLower(CultureInfo.InvariantCulture));
-
-                    // This will be inaccurate some time as there are a few EoBs that
-                    // cover services across multiple dates. This line will still exist
-                    // and have a single date (the last one in the grid with all the services listed)
-                    // Dealing with these kinds of EoBs warrants a bigger refactor...
-                    model.DateOfService = DateTime.TryParse(parts[1], out var date) ? date : null;
-                }
-            }
-            else if (Regex.IsMatch(line, "[a-zA-Z]+ [0-9]{2}, [0-9]{4}") && model.DateProcessed == null)
-            {
-                model.DateProcessed = DateTime.TryParse(line, out var date) ? date : null;
-            }
-            else if (Regex.IsMatch(line, "Claim #"))
-            {
-                var parts = line.Split("# ");
-                model.ClaimNumber = parts[1].Split(",")[0];
-            }
-            else if (line.StartsWith("Totals", false, CultureInfo.InvariantCulture))
-            {
-                // Indexes would need to be +1 from the other rows that aren't the total
-                // as those include a column on position 1 with the date of service.
-                var amounts = line.Split(" ");
-                model.AmountBilled = ParseDouble(amounts[1]);
-                model.NetworkDiscount = ParseDouble(amounts[2]);
-                model.PaidByHealthPlan = ParseDouble(amounts[3]);
-                model.FromAnotherSource = ParseDouble(amounts[4]);
-                model.TotalPlanDiscountsAndPayments = ParseDouble(amounts[5]);
-                model.Deductible = ParseDouble(amounts[6]);
-                model.Coinsurance = ParseDouble(amounts[7]);
-                model.NotCovered = ParseDouble(amounts[8]);
-                model.YourResponsibility = ParseDouble(amounts[9]);
-            }
-        }
-
-        return model;
-    }
-
-    public static CignaClaim ExtractCignaFields(IEnumerable<string> text)
-    {
-
-        var claimNumber = ExtractFieldNextLineByEquals(text, "Claim # / ID").Split(" ")[0];
-        var providerName = ExtractFieldByStartsWith(text, "for services provided by");
-
-        var dateOfServiceLine = ExtractFieldNextLineByEquals(text, "Service date");
-        if (string.IsNullOrEmpty(dateOfServiceLine))
-        {
-            dateOfServiceLine = ExtractFieldNextLineByEquals(text, "Service dates");
-        }
-        var dateOfService = ParseDate(dateOfServiceLine.Split(" - ")[0]);
-
-        var amountBilled = ParseDouble(ExtractFieldNextLineByEquals(text, "Amount Billed"));
-        var discount = ParseDouble(ExtractFieldNextLineByEquals(text, "Discount"));
-        var amountPaid = ParseDouble(ExtractFieldNextLineByEquals(text, "paid"));
-        var amountYouOwe = ParseDouble(ExtractFieldNextLineByEquals(text, "What I Owe"));
-
-        var dateProcessedLine = ExtractFieldByStartsWith(text, "Cigna received this claim on");
-        var dateProcessed = ParseDate(dateProcessedLine.Split("processed it on ")[1].Replace(".", ""));
-
-        var model = new CignaClaim
-        {
-            ClaimNumber = claimNumber,
-            ProviderName = providerName,
-            DateOfService = dateOfService,
-            AmountBilled = amountBilled,
-            Discount = discount,
-            AmountPaid = amountPaid,
-            AmountYouOwe = amountYouOwe,
-            DateProcessed = dateProcessed
-        };
-
-        return model;
     }
 }

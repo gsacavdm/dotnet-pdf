@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using Sc.Pdf.Extensions;
 
 namespace Sc.Pdf.Models;
 
-public class RegenceClaim
+public class RegenceClaim : IClaim
 {
 
     public string ClaimNumber { get; set; }
@@ -56,15 +57,34 @@ public class RegenceClaim
         }
     }
 
-    public bool IsInvalid => this.AmountYouOwe == null;
+    public RegenceClaim(IEnumerable<string> text)
+    {
+        this.ProviderName = text.ExtractFieldByStartsWith("Provider name");
+        this.DateOfService = text.ExtractFieldByStartsWith("Date of service").ParseDate();
+        this.DateProcessed = text.ExtractFieldByStartsWith("Date processed").ParseDate();
+        this.PharmacyName = text.ExtractFieldByStartsWith("Pharmacy name");
+        this.NdcNumber = text.ExtractFieldByStartsWith("NDC number");
+        this.PrescriptionNumber = text.ExtractFieldByStartsWith("Prescription number");
+        this.DateOfFill = text.ExtractFieldByStartsWith("Date of fill").ParseDate();
+        this.MedicationName = text.ExtractFieldByStartsWith("Medication name").Replace("/", "-").Capitalize();
+        this.PrescriberName = text.ExtractFieldByStartsWith("Prescriber name");
+        this.ClaimNumber = text.ExtractFieldByStartsWith("Claim number");
+        this.AmountBilled = text.ExtractFieldByStartsWith("Amount billed").ParseDouble();
+        this.DiscountedRate = text.ExtractFieldByStartsWith("Your discounted rate").ParseDouble();
+        this.AmountPaid = text.ExtractFieldByStartsWith("Amount we paid").ParseDouble();
+        this.AmountYouOwe = text.ExtractFieldByStartsWith("Amount you owe").ParseDouble()
+            ?? text.ExtractFieldByStartsWith("Amount you may owe").ParseDouble();
+    }
+
+    public bool IsValid => this.AmountYouOwe != null;
 
     public void WriteLine()
     {
         Console.WriteLine("==============");
 
         Console.WriteLine($"Provider name: {this.ProviderName}");
-        Console.WriteLine($"Date of service: {this.DateOfService}");
-        Console.WriteLine($"Date processed: {this.DateProcessed}");
+        Console.WriteLine($"Date of service: {this.DateOfService:yyyy/MM/dd}");
+        Console.WriteLine($"Date processed: {this.DateProcessed:yyyy/MM/dd}");
         Console.WriteLine($"Pharmacy name: {this.PharmacyName}");
         Console.WriteLine($"Date of fill: {this.DateOfFill}");
         Console.WriteLine($"Medication name: {this.MedicationName}");
@@ -84,20 +104,20 @@ public class RegenceClaim
 
     public void WriteCsv()
     {
-        Console.Write("\"" + this.ProviderName + "\",");
-        Console.Write("\"" + this.DateOfService + "\",");
-        Console.Write("\"" + this.DateProcessed + "\",");
-        Console.Write("\"" + this.PharmacyName + "\",");
-        Console.Write("\"" + this.DateOfFill + "\",");
-        Console.Write("\"" + this.MedicationName + "\",");
-        Console.Write("\"" + this.PrescriberName + "\",");
-        Console.Write("\"" + this.PrescriptionNumber + "\",");
-        Console.Write("\"" + this.NdcNumber + "\",");
-        Console.Write("\"" + this.ClaimNumber + "\",");
-        Console.Write("\"" + this.AmountBilled + "\",");
-        Console.Write("\"" + this.DiscountedRate + "\",");
-        Console.Write("\"" + this.AmountPaid + "\",");
-        Console.Write("\"" + this.AmountYouOwe + "\"");
+        Console.Write($"\"{this.ProviderName}\",");
+        Console.Write($"\"{this.DateOfService:yyyy/MM/dd}\",");
+        Console.Write($"\"{this.DateProcessed:yyyy/MM/dd}\",");
+        Console.Write($"\"{this.PharmacyName}\",");
+        Console.Write($"\"{this.DateOfFill:yyyy/MM/dd}\",");
+        Console.Write($"\"{this.MedicationName}\",");
+        Console.Write($"\"{this.PrescriberName}\",");
+        Console.Write($"\"{this.PrescriptionNumber}\",");
+        Console.Write($"\"{this.NdcNumber}\",");
+        Console.Write($"\"{this.ClaimNumber}\",");
+        Console.Write($"\"{this.AmountBilled}\",");
+        Console.Write($"\"{this.DiscountedRate}\",");
+        Console.Write($"\"{this.AmountPaid}\",");
+        Console.Write($"\"{this.AmountYouOwe}\"");
 
         Console.WriteLine();
     }

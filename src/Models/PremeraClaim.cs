@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Sc.Pdf.Extensions;
 
 namespace Sc.Pdf.Models;
 
-public class PremeraClaim
+public class PremeraClaim : IClaim
 {
 
     public string ClaimNumber { get; set; }
@@ -30,15 +33,62 @@ public class PremeraClaim
         }
     }
 
-    public bool IsInvalid => this.ProviderName == null;
+    public PremeraClaim(IEnumerable<string> text)
+    {
+        foreach (var line in text)
+        {
+            if (line.StartsWith("For services provided by", false, CultureInfo.InvariantCulture))
+            {
+                var tmp = line.Replace("For services provided by ", "");
+                var parts = tmp.Split(" on ");
+
+                if (parts.Length == 2)
+                {
+                    this.ProviderName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(parts[0].ToLower(CultureInfo.InvariantCulture));
+
+                    // This will be inaccurate some time as there are a few EoBs that
+                    // cover services across multiple dates. This line will still exist
+                    // and have a single date (the last one in the grid with all the services listed)
+                    // Dealing with these kinds of EoBs warrants a bigger refactor...
+                    this.DateOfService = DateTime.TryParse(parts[1], out var date) ? date : null;
+                }
+            }
+            else if (Regex.IsMatch(line, "[a-zA-Z]+ [0-9]{2}, [0-9]{4}") && this.DateProcessed == null)
+            {
+                this.DateProcessed = DateTime.TryParse(line, out var date) ? date : null;
+            }
+            else if (Regex.IsMatch(line, "Claim #"))
+            {
+                var parts = line.Split("# ");
+                this.ClaimNumber = parts[1].Split(",")[0];
+            }
+            else if (line.StartsWith("Totals", false, CultureInfo.InvariantCulture))
+            {
+                // Indexes would need to be +1 from the other rows that aren't the total
+                // as those include a column on position 1 with the date of service.
+                var amounts = line.Split(" ");
+                this.AmountBilled = amounts[1].ParseDouble();
+                this.NetworkDiscount = amounts[2].ParseDouble();
+                this.PaidByHealthPlan = amounts[3].ParseDouble();
+                this.FromAnotherSource = amounts[4].ParseDouble();
+                this.TotalPlanDiscountsAndPayments = amounts[5].ParseDouble();
+                this.Deductible = amounts[6].ParseDouble();
+                this.Coinsurance = amounts[7].ParseDouble();
+                this.NotCovered = amounts[8].ParseDouble();
+                this.YourResponsibility = amounts[9].ParseDouble();
+            }
+        }
+    }
+
+    public bool IsValid => this.ProviderName != null;
 
     public void WriteLine()
     {
         Console.WriteLine("==============");
 
         Console.WriteLine($"Provider name: {this.ProviderName}");
-        Console.WriteLine($"Date of service: {this.DateOfService}");
-        Console.WriteLine($"Date processed: {this.DateProcessed}");
+        Console.WriteLine($"Date of service: {this.DateOfService:yyyy/MM/dd}");
+        Console.WriteLine($"Date processed: {this.DateProcessed:yyyy/MM/dd}");
         Console.WriteLine($"Claim number: {this.ClaimNumber}");
         Console.WriteLine($"Amount billed: {this.AmountBilled}");
         Console.WriteLine($"Network Discount: {this.NetworkDiscount}");
@@ -57,19 +107,19 @@ public class PremeraClaim
 
     public void WriteCsv()
     {
-        Console.Write("\"" + this.ProviderName + "\",");
-        Console.Write("\"" + this.DateOfService + "\",");
-        Console.Write("\"" + this.DateProcessed + "\",");
-        Console.Write("\"" + this.ClaimNumber + "\",");
-        Console.Write("\"" + this.AmountBilled + "\",");
-        Console.Write("\"" + this.NetworkDiscount + "\",");
-        Console.Write("\"" + this.PaidByHealthPlan + "\",");
-        Console.Write("\"" + this.FromAnotherSource + "\",");
-        Console.Write("\"" + this.TotalPlanDiscountsAndPayments + "\",");
-        Console.Write("\"" + this.Deductible + "\",");
-        Console.Write("\"" + this.Coinsurance + "\",");
-        Console.Write("\"" + this.NotCovered + "\",");
-        Console.Write("\"" + this.YourResponsibility + "\"");
+        Console.Write($"\"{this.ProviderName}\",");
+        Console.Write($"\"{this.DateOfService:yyyy/MM/dd}\",");
+        Console.Write($"\"{this.DateProcessed:yyyy/MM/dd}\",");
+        Console.Write($"\"{this.ClaimNumber}\",");
+        Console.Write($"\"{this.AmountBilled}\",");
+        Console.Write($"\"{this.NetworkDiscount}\",");
+        Console.Write($"\"{this.PaidByHealthPlan}\",");
+        Console.Write($"\"{this.FromAnotherSource}\",");
+        Console.Write($"\"{this.TotalPlanDiscountsAndPayments}\",");
+        Console.Write($"\"{this.Deductible}\",");
+        Console.Write($"\"{this.Coinsurance}\",");
+        Console.Write($"\"{this.NotCovered}\",");
+        Console.Write($"\"{this.YourResponsibility}\"");
 
         Console.WriteLine();
     }
