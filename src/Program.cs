@@ -9,6 +9,7 @@ using CommandLine;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
+using Sc.Pdf.Extensions;
 using Sc.Pdf.Models;
 namespace Sc.Pdf;
 
@@ -47,58 +48,66 @@ public class Program
 
         foreach (var filePath in filePaths)
         {
-            var text = ImportPdf(filePath);
+            try
+            {
+                var text = ImportPdf(filePath);
 
-            IClaim claim;
-            if (options.Mode.StartsWith("Regence", false, CultureInfo.InvariantCulture))
-            {
-                claim = new RegenceClaim(text);
-            }
-            else if (options.Mode.StartsWith("Premera", false, CultureInfo.InvariantCulture))
-            {
-                claim = new PremeraClaim(text);
-            }
-            else if (options.Mode.StartsWith("Cigna", false, CultureInfo.InvariantCulture))
-            {
-                claim = new CignaClaim(text);
-            }
-            else if (options.Mode.StartsWith("Vsp", false, CultureInfo.InvariantCulture))
-            {
-                claim = new VspClaim(text);
-            }
-            else
-            {
-                foreach (var t in text) { Console.WriteLine(t); }
-                return;
-            }
-
-            if (options.Mode.EndsWith("Move", true, CultureInfo.InvariantCulture))
-            {
-                var directoryName = Path.GetDirectoryName(filePath);
-                var fileName = Path.GetFileName(filePath);
-                var newFileName = claim.FileName;
-
-                if (!claim.IsValid || string.IsNullOrEmpty(newFileName))
+                IClaim claim;
+                if (options.Mode.StartsWith("Regence", false, CultureInfo.InvariantCulture))
                 {
-                    Console.WriteLine($"Couldn't extract {fileName}, skipping...");
-                    continue;
+                    claim = new RegenceClaim(text);
+                }
+                else if (options.Mode.StartsWith("Premera", false, CultureInfo.InvariantCulture))
+                {
+                    claim = new PremeraClaim(text);
+                }
+                else if (options.Mode.StartsWith("Cigna", false, CultureInfo.InvariantCulture))
+                {
+                    claim = new CignaClaim(text);
+                }
+                else if (options.Mode.StartsWith("Vsp", false, CultureInfo.InvariantCulture))
+                {
+                    claim = new VspClaim(text);
+                }
+                else
+                {
+                    foreach (var t in text) { Console.WriteLine(t); }
+                    return;
                 }
 
-                var newFilePath = Path.Combine(directoryName, newFileName);
+                if (options.Mode.EndsWith("Move", true, CultureInfo.InvariantCulture))
+                {
+                    var directoryName = Path.GetDirectoryName(filePath);
+                    var fileName = Path.GetFileName(filePath);
+                    var newFileName = claim.FileName;
 
-                Console.WriteLine($"Moving {fileName} to {newFileName}");
-                try
-                {
-                    File.Move(filePath, newFilePath, overwriteOnMove);
+                    if (!claim.IsValid || string.IsNullOrEmpty(newFileName))
+                    {
+                        Console.WriteLine($"Couldn't extract {fileName}, skipping...");
+                        continue;
+                    }
+
+                    var newFilePath = Path.Combine(directoryName, newFileName);
+
+                    Console.WriteLine($"Moving {fileName} to {newFileName}");
+                    try
+                    {
+                        File.Move(filePath, newFilePath, overwriteOnMove);
+                    }
+                    catch (IOException ioex)
+                    {
+                        Console.WriteLine($"Unable to move {fileName} due to exception \"{ioex.Message}\"");
+                    }
                 }
-                catch (IOException ioex)
+                else
                 {
-                    Console.WriteLine($"Unable to move {fileName} due to exception \"{ioex.Message}\"");
+                    claim.WriteCsv();
                 }
             }
-            else
+            catch (Exception ex)
             {
-                claim.WriteCsv();
+                Console.WriteLine($"Exception processing ${filePath}");
+                Console.WriteLine(ex);
             }
         }
     }
