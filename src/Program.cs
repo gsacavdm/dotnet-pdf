@@ -53,6 +53,7 @@ public class Program
                 var text = ImportPdf(filePath);
 
                 IClaim claim;
+                // ToDo: Add an autodetect option
                 if (options.Mode.StartsWith("Regence", false, CultureInfo.InvariantCulture))
                 {
                     claim = new RegenceClaim(text);
