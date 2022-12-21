@@ -1,6 +1,3 @@
-using System;
-using Sc.Pdf.Extensions;
-
 namespace Sc.Pdf.Models;
 
 public interface IClaim

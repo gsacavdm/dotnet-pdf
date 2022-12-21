@@ -13,7 +13,7 @@ public class Options
     [Option('d', "pdfDirectoryPath", HelpText = "Path to directory with source PDF files.")]
     public string PdfDirectoryPath { set; get; }
 
-    [Option('m', "mode", Default = "Simple", HelpText = "One of 'Simple' (Default), 'Regence', 'Premera', 'Cigna', 'RegenceMove', 'PremeraMove', 'CignaMove'.")]
+    [Option('m', "mode", Default = "Simple", HelpText = "One of 'Simple' (Default), 'Regence', 'Premera', 'Cigna', 'Vsp', 'RegenceMove', 'PremeraMove', 'CignaMove', 'VspMove'.")]
     public string Mode { set; get; }
 
     [Option('o', "overwrite", Required = false, HelpText = "Overwrite file if exists. Applicable only for move operations.")]

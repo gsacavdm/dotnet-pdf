@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 using CommandLine;
 
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
-using Sc.Pdf.Extensions;
 using Sc.Pdf.Models;
 namespace Sc.Pdf;
 
@@ -64,6 +61,10 @@ public class Program
             else if (options.Mode.StartsWith("Cigna", false, CultureInfo.InvariantCulture))
             {
                 claim = new CignaClaim(text);
+            }
+            else if (options.Mode.StartsWith("Vsp", false, CultureInfo.InvariantCulture))
+            {
+                claim = new VspClaim(text);
             }
             else
             {
