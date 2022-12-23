@@ -34,7 +34,7 @@ public class Program
         var filePaths = new List<string>();
         if (!string.IsNullOrEmpty(options.PdfDirectoryPath))
         {
-            filePaths.AddRange(Directory.EnumerateFiles(options.PdfDirectoryPath, "*.pdf"));
+            filePaths.AddRange(Directory.EnumerateFiles(options.PdfDirectoryPath, options.PdfDirectoryFilePattern ?? "*.pdf"));
         }
         else if (!string.IsNullOrEmpty(options.PdfFilePath))
         {

@@ -13,6 +13,9 @@ public class Options
     [Option('d', "pdfDirectoryPath", HelpText = "Path to directory with source PDF files.")]
     public string PdfDirectoryPath { set; get; }
 
+    [Option('p', "pdfFilePattern", Required = false, HelpText = "File pattern used to limit which files to process when using the pdfDirectoryPath / -p parameter.")]
+    public string PdfDirectoryFilePattern { set; get; }
+
     [Option('m', "mode", Default = "Simple", HelpText = "One of 'Simple' (Default), 'Regence', 'Premera', 'Cigna', 'Vsp', 'RegenceMove', 'PremeraMove', 'CignaMove', 'VspMove'.")]
     public string Mode { set; get; }
 
