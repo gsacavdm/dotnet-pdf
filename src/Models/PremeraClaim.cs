@@ -123,4 +123,23 @@ public class PremeraClaim : IClaim
 
         Console.WriteLine();
     }
+
+    public void WriteCsvHeader()
+    {
+        Console.Write("ProviderName,");
+        Console.Write("DateOfService,");
+        Console.Write("DateProcessed,");
+        Console.Write("ClaimNumber,");
+        Console.Write("AmountBilled,");
+        Console.Write("NetworkDiscount,");
+        Console.Write("PaidByHealthPlan,");
+        Console.Write("FromAnotherSource,");
+        Console.Write("TotalPlanDiscountsAndPayments,");
+        Console.Write("Deductible,");
+        Console.Write("Coinsurance,");
+        Console.Write("NotCovered,");
+        Console.Write("YourResponsibility");
+
+        Console.WriteLine();
+    }
 }

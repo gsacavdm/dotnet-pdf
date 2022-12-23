@@ -7,4 +7,5 @@ public interface IClaim
 
     public void WriteLine();
     public void WriteCsv();
+    public void WriteCsvHeader();
 }

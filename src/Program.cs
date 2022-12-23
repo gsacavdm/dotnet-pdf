@@ -46,6 +46,7 @@ public class Program
             return;
         }
 
+        var firstLineInCsv = true;
         foreach (var filePath in filePaths)
         {
             try
@@ -102,13 +103,21 @@ public class Program
                 }
                 else
                 {
+                    if (firstLineInCsv)
+                    {
+                        claim.WriteCsvHeader();
+                    }
                     claim.WriteCsv();
+                    firstLineInCsv = false;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception processing ${filePath}");
-                Console.WriteLine(ex);
+                if (options.Verbose)
+                {
+                    Console.WriteLine($"Exception processing ${filePath}");
+                    Console.WriteLine(ex);
+                }
             }
         }
     }

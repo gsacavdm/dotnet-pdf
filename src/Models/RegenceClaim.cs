@@ -121,4 +121,24 @@ public class RegenceClaim : IClaim
 
         Console.WriteLine();
     }
+
+    public void WriteCsvHeader()
+    {
+        Console.Write("ProviderName,");
+        Console.Write("DateOfService,");
+        Console.Write("DateProcessed,");
+        Console.Write("PharmacyName,");
+        Console.Write("DateOfFill,");
+        Console.Write("MedicationName,");
+        Console.Write("PrescriberName,");
+        Console.Write("PrescriptionNumber,");
+        Console.Write("NdcNumber,");
+        Console.Write("ClaimNumber,");
+        Console.Write("AmountBilled,");
+        Console.Write("DiscountedRate,");
+        Console.Write("AmountPaid,");
+        Console.Write("AmountYouOwe");
+
+        Console.WriteLine();
+    }
 }

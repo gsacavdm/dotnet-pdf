@@ -63,4 +63,16 @@ public class VspClaim : IClaim
 
         Console.WriteLine();
     }
+
+    public void WriteCsvHeader()
+    {
+        Console.Write("ProviderName,");
+        Console.Write("DateOfService,");
+        Console.Write("DateOfNotice,");
+        Console.Write("ClaimNumber,");
+        Console.Write("AmountBilled,");
+        Console.Write("AmountPaid,");
+
+        Console.WriteLine();
+    }
 }

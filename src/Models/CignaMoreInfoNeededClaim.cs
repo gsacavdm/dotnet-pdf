@@ -37,7 +37,17 @@ public class CignaMoreInfoNeededClaim : IClaim
         Console.Write($"\"{this.ProviderName}\",");
         Console.Write($"\"{this.DateOfService:yyyy/MM/dd}\",");
         Console.Write($"\"{this.DateProcessed:yyyy/MM/dd}\",");
-        Console.Write($"\"{this.ClaimNumber}\",");
+        Console.Write($"\"{this.ClaimNumber}\"");
+
+        Console.WriteLine();
+    }
+
+    public void WriteCsvHeader()
+    {
+        Console.Write("ProviderName,");
+        Console.Write("DateOfService,");
+        Console.Write("DateProcessed,");
+        Console.Write("ClaimNumber");
 
         Console.WriteLine();
     }

@@ -58,6 +58,20 @@ public class CignaClaim : IClaim
 
     public bool IsValid => this.AmountBilled != null;
 
+    public void WriteCsvHeader()
+    {
+        Console.Write("ProviderName,");
+        Console.Write("DateOfService,");
+        Console.Write("DateProcessed,");
+        Console.Write("ClaimNumber,");
+        Console.Write("AmountBilled,");
+        Console.Write("Discount,");
+        Console.Write("AmountPaid,");
+        Console.Write("AmountYouOwe");
+
+        Console.WriteLine();
+    }
+
     public void WriteCsv()
     {
         Console.Write($"\"{this.ProviderName}\",");
