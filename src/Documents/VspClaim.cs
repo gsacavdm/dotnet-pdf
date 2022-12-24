@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Sc.Pdf.Extensions;
 
-namespace Sc.Pdf.Models;
+namespace Sc.Pdf.Documents;
 
-public class VspClaim : IClaim
+public class VspClaim : Document, IDocument
 {
 
     public string ClaimNumber { get; set; }
@@ -15,23 +15,13 @@ public class VspClaim : IClaim
     public double? AmountBilled { get; set; }
     public double? AmountPaid { get; set; }
 
-    public string FileName
+    public override string StandardFileName
     {
         get
         {
             var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
             return $"{this.DateOfService.ToDateString()} {providerName} Claim Vsp {this.ClaimNumber} {this.DateOfNotice.ToDateString()}.pdf";
         }
-    }
-
-    public VspClaim(IEnumerable<string> text)
-    {
-        this.ClaimNumber = text.ExtractFieldByStartsWith("Claim #:").Split(" ")[0];
-        this.DateOfService = text.ExtractFieldByStartsWith("Date of Service:").ParseDate();
-        this.DateOfNotice = text.ExtractFieldByStartsWith("Date of Notice:").ParseDate();
-        this.ProviderName = text.ExtractFieldByStartsWith("Provider:");
-        this.AmountBilled = text.ExtractFieldNextLineByEquals("Billed:").ParseDouble();
-        this.AmountPaid = text.ExtractFieldNextLineByEquals("Paid:").ParseDouble();
     }
 
     public bool IsValid => this.ProviderName != null;
@@ -49,7 +39,7 @@ public class VspClaim : IClaim
 
         Console.WriteLine("==============");
 
-        Console.WriteLine($"Final provider name: {this.FileName}");
+        Console.WriteLine($"Standard file name: {this.StandardFileName}");
     }
 
     public void WriteCsv()
@@ -71,7 +61,7 @@ public class VspClaim : IClaim
         Console.Write("DateOfNotice,");
         Console.Write("ClaimNumber,");
         Console.Write("AmountBilled,");
-        Console.Write("AmountPaid,");
+        Console.Write("AmountPaid");
 
         Console.WriteLine();
     }

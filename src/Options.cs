@@ -16,7 +16,7 @@ public class Options
     [Option('p', "pdfFilePattern", Required = false, HelpText = "File pattern used to limit which files to process when using the pdfDirectoryPath / -p parameter.")]
     public string PdfDirectoryFilePattern { set; get; }
 
-    [Option('m', "mode", Default = "Simple", HelpText = "One of 'Simple' (Default), 'Regence', 'Premera', 'Cigna', 'Vsp', 'RegenceMove', 'PremeraMove', 'CignaMove', 'VspMove'.")]
+    [Option('m', "mode", Default = "Simple", HelpText = "One of 'Simple' (Default), 'Csv', 'Move'.")]
     public string Mode { set; get; }
 
     [Option('o', "overwrite", Required = false, HelpText = "Overwrite file if exists. Applicable only for move operations.")]

@@ -4,9 +4,9 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Sc.Pdf.Extensions;
 
-namespace Sc.Pdf.Models;
+namespace Sc.Pdf.Documents;
 
-public class PremeraClaim : IClaim
+public class PremeraClaim : Document, IDocument
 {
 
     public string ClaimNumber { get; set; }
@@ -24,59 +24,12 @@ public class PremeraClaim : IClaim
     public double? NotCovered { get; set; }
     public double? YourResponsibility { get; set; }
 
-    public string FileName
+    public override string StandardFileName
     {
         get
         {
             var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
             return $"{this.DateOfService.ToDateString()} {providerName} Claim Premera {this.ClaimNumber} {this.DateProcessed.ToDateString()}.pdf";
-        }
-    }
-
-    public PremeraClaim(IEnumerable<string> text)
-    {
-        foreach (var line in text)
-        {
-            if (line.StartsWith("For services provided by", false, CultureInfo.InvariantCulture))
-            {
-                var tmp = line.Replace("For services provided by ", "");
-                var parts = tmp.Split(" on ");
-
-                if (parts.Length == 2)
-                {
-                    this.ProviderName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(parts[0].ToLower(CultureInfo.InvariantCulture));
-
-                    // This will be inaccurate some time as there are a few EoBs that
-                    // cover services across multiple dates. This line will still exist
-                    // and have a single date (the last one in the grid with all the services listed)
-                    // Dealing with these kinds of EoBs warrants a bigger refactor...
-                    this.DateOfService = DateTime.TryParse(parts[1], out var date) ? date : null;
-                }
-            }
-            else if (Regex.IsMatch(line, "[a-zA-Z]+ [0-9]{2}, [0-9]{4}") && this.DateProcessed == null)
-            {
-                this.DateProcessed = DateTime.TryParse(line, out var date) ? date : null;
-            }
-            else if (Regex.IsMatch(line, "Claim #"))
-            {
-                var parts = line.Split("# ");
-                this.ClaimNumber = parts[1].Split(",")[0];
-            }
-            else if (line.StartsWith("Totals", false, CultureInfo.InvariantCulture))
-            {
-                // Indexes would need to be +1 from the other rows that aren't the total
-                // as those include a column on position 1 with the date of service.
-                var amounts = line.Split(" ");
-                this.AmountBilled = amounts[1].ParseDouble();
-                this.NetworkDiscount = amounts[2].ParseDouble();
-                this.PaidByHealthPlan = amounts[3].ParseDouble();
-                this.FromAnotherSource = amounts[4].ParseDouble();
-                this.TotalPlanDiscountsAndPayments = amounts[5].ParseDouble();
-                this.Deductible = amounts[6].ParseDouble();
-                this.Coinsurance = amounts[7].ParseDouble();
-                this.NotCovered = amounts[8].ParseDouble();
-                this.YourResponsibility = amounts[9].ParseDouble();
-            }
         }
     }
 
@@ -102,7 +55,7 @@ public class PremeraClaim : IClaim
 
         Console.WriteLine("==============");
 
-        Console.WriteLine($"Final provider name: {this.FileName}");
+        Console.WriteLine($"Standard file name: {this.StandardFileName}");
     }
 
     public void WriteCsv()

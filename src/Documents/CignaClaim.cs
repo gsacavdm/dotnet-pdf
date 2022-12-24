@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using Sc.Pdf.Extensions;
 
-namespace Sc.Pdf.Models;
+namespace Sc.Pdf.Documents;
 
-public class CignaClaim : IClaim
+public class CignaClaim : Document, IDocument
 {
-
     public string ClaimNumber { get; set; }
     public DateTime? DateOfService { get; set; }
     public DateTime? DateProcessed { get; set; }
@@ -16,44 +15,14 @@ public class CignaClaim : IClaim
     public double? Discount { get; set; }
     public double? AmountPaid { get; set; }
     public double? AmountYouOwe { get; set; }
-    public string FileName
+
+    public override string StandardFileName
     {
         get
         {
             var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
             return $"{this.DateOfService.ToDateString()} {providerName} Claim Cigna {this.ClaimNumber} {this.DateProcessed.ToDateString()}.pdf";
         }
-    }
-
-
-    public CignaClaim(IEnumerable<string> text)
-    {
-        var claimNumber = text.ExtractFieldNextLineByEquals("Claim # / ID").Split(" ")[0];
-        var providerName = text.ExtractFieldByStartsWith("for services provided by");
-
-        var dateOfServiceLine = text.ExtractFieldNextLineByEquals("Service date");
-        if (string.IsNullOrEmpty(dateOfServiceLine))
-        {
-            dateOfServiceLine = text.ExtractFieldNextLineByEquals("Service dates");
-        }
-        var dateOfService = dateOfServiceLine.Split(" - ")[0].ParseDate();
-
-        var amountBilled = text.ExtractFieldNextLineByEquals("Amount Billed").ParseDouble();
-        var discount = text.ExtractFieldNextLineByEquals("Discount").ParseDouble();
-        var amountPaid = text.ExtractFieldNextLineByEquals("paid").ParseDouble();
-        var amountYouOwe = text.ExtractFieldNextLineByEquals("What I Owe").ParseDouble();
-
-        var dateProcessedLine = text.ExtractFieldByStartsWith("Cigna received this claim on");
-        var dateProcessed = dateProcessedLine.Split("processed it on ")[1].Replace(".", "").ParseDate();
-
-        this.ClaimNumber = claimNumber;
-        this.ProviderName = providerName;
-        this.DateOfService = dateOfService;
-        this.AmountBilled = amountBilled;
-        this.Discount = discount;
-        this.AmountPaid = amountPaid;
-        this.AmountYouOwe = amountYouOwe;
-        this.DateProcessed = dateProcessed;
     }
 
     public bool IsValid => this.AmountBilled != null;
@@ -101,6 +70,6 @@ public class CignaClaim : IClaim
 
         Console.WriteLine("==============");
 
-        Console.WriteLine($"Final provider name: {this.FileName}");
+        Console.WriteLine($"Standard file name: {this.StandardFileName}");
     }
 }

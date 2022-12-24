@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Sc.Pdf.Extensions;
 
-namespace Sc.Pdf.Models;
+namespace Sc.Pdf.Documents;
 
-public class CignaMoreInfoNeededClaim : IClaim
+public class CignaMoreInfoNeededClaim : Document, IDocument
 {
 
     public string ClaimNumber { get; set; }
@@ -12,22 +12,13 @@ public class CignaMoreInfoNeededClaim : IClaim
     public DateTime? DateProcessed { get; set; }
     public string ProviderName { get; set; }
 
-    public string FileName
+    public override string StandardFileName
     {
         get
         {
             var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
             return $"{this.DateOfService.ToDateString()} {providerName} Claim Cigna {this.ClaimNumber} {this.DateProcessed.ToDateString()} More Info Needed.pdf";
         }
-    }
-
-
-    public CignaMoreInfoNeededClaim(IEnumerable<string> text)
-    {
-        this.ClaimNumber = text.ExtractFieldByStartsWith("Claim Number:");
-        this.ProviderName = text.ExtractFieldByStartsWith("Provider:");
-        this.DateOfService = text.ExtractFieldByStartsWith("Date of Service:").Split(" - ")[0].ParseDate();
-        this.DateProcessed = text.ExtractFieldPreviousLineByStartsWith("Subscriber:").ParseDate();
     }
 
     public bool IsValid => this.ClaimNumber != null;
@@ -63,6 +54,6 @@ public class CignaMoreInfoNeededClaim : IClaim
 
         Console.WriteLine("==============");
 
-        Console.WriteLine($"Final provider name: {this.FileName}");
+        Console.WriteLine($"Standard file name: {this.StandardFileName}");
     }
 }

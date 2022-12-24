@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Sc.Pdf.Extensions;
 
-namespace Sc.Pdf.Models;
+namespace Sc.Pdf.Documents;
 
-public class RegenceClaim : IClaim
+public class RegenceClaim : Document, IDocument
 {
 
     public string ClaimNumber { get; set; }
@@ -23,7 +23,7 @@ public class RegenceClaim : IClaim
     public double? DiscountedRate { get; set; }
     public double? AmountPaid { get; set; }
     public double? AmountYouOwe { get; set; }
-    public string FileName
+    public override string StandardFileName
     {
         get
         {
@@ -57,25 +57,6 @@ public class RegenceClaim : IClaim
         }
     }
 
-    public RegenceClaim(IEnumerable<string> text)
-    {
-        this.ProviderName = text.ExtractFieldByStartsWith("Provider name");
-        this.DateOfService = text.ExtractFieldByStartsWith("Date of service").ParseDate();
-        this.DateProcessed = text.ExtractFieldByStartsWith("Date processed").ParseDate();
-        this.PharmacyName = text.ExtractFieldByStartsWith("Pharmacy name");
-        this.NdcNumber = text.ExtractFieldByStartsWith("NDC number");
-        this.PrescriptionNumber = text.ExtractFieldByStartsWith("Prescription number");
-        this.DateOfFill = text.ExtractFieldByStartsWith("Date of fill").ParseDate();
-        this.MedicationName = text.ExtractFieldByStartsWith("Medication name").Replace("/", "-").Capitalize();
-        this.PrescriberName = text.ExtractFieldByStartsWith("Prescriber name");
-        this.ClaimNumber = text.ExtractFieldByStartsWith("Claim number");
-        this.AmountBilled = text.ExtractFieldByStartsWith("Amount billed").ParseDouble();
-        this.DiscountedRate = text.ExtractFieldByStartsWith("Your discounted rate").ParseDouble();
-        this.AmountPaid = text.ExtractFieldByStartsWith("Amount we paid").ParseDouble();
-        this.AmountYouOwe = text.ExtractFieldByStartsWith("Amount you owe").ParseDouble()
-            ?? text.ExtractFieldByStartsWith("Amount you may owe").ParseDouble();
-    }
-
     public bool IsValid => this.AmountYouOwe != null;
 
     public void WriteLine()
@@ -99,7 +80,7 @@ public class RegenceClaim : IClaim
 
         Console.WriteLine("==============");
 
-        Console.WriteLine($"Final provider name: {this.FileName}");
+        Console.WriteLine($"Standard file name: {this.StandardFileName}");
     }
 
     public void WriteCsv()

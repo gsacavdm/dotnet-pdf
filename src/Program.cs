@@ -9,8 +9,9 @@ using CommandLine;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
-using Sc.Pdf.Extensions;
-using Sc.Pdf.Models;
+using Sc.Pdf.Documents;
+using Sc.Pdf.TextProcessors;
+
 namespace Sc.Pdf;
 
 public class Program
@@ -46,44 +47,50 @@ public class Program
             return;
         }
 
-        var firstLineInCsv = true;
+        List<ITextProcessor> textProcessors = new();
+        textProcessors.Add(new CignaClaimProcessor());
+        textProcessors.Add(new CignaMoreInfoNeededClaimProcessor());
+        textProcessors.Add(new PremeraClaimProcessor());
+        textProcessors.Add(new RegenceClaimProcessor());
+        textProcessors.Add(new VspClaimProcessor());
+
+        var hasWrittenCsvHeaders = false;
         foreach (var filePath in filePaths)
         {
             try
             {
                 var text = ImportPdf(filePath);
 
-                IClaim claim;
-                // ToDo: Add an autodetect option
-                if (options.Mode.StartsWith("Regence", false, CultureInfo.InvariantCulture))
-                {
-                    claim = new RegenceClaim(text);
-                }
-                else if (options.Mode.StartsWith("Premera", false, CultureInfo.InvariantCulture))
-                {
-                    claim = new PremeraClaim(text);
-                }
-                else if (options.Mode.StartsWith("Cigna", false, CultureInfo.InvariantCulture))
-                {
-                    claim = new CignaClaim(text);
-                }
-                else if (options.Mode.StartsWith("Vsp", false, CultureInfo.InvariantCulture))
-                {
-                    claim = new VspClaim(text);
-                }
-                else
+                if (options.Mode.Equals("Simple", StringComparison.OrdinalIgnoreCase))
                 {
                     foreach (var t in text) { Console.WriteLine(t); }
                     return;
                 }
 
-                if (options.Mode.EndsWith("Move", true, CultureInfo.InvariantCulture))
+                IDocument document = null;
+                foreach (var textProcessor in textProcessors)
+                {
+                    if (textProcessor.TryParse(text, out document))
+                    {
+                        // No need to keep trying processors
+                        continue;
+                    }
+                }
+
+                if (document == null)
+                {
+                    throw new InvalidOperationException("No valid processor found.");
+                }
+
+                var fileName = Path.GetFileName(filePath);
+                document.SourceFileName = fileName;
+
+                if (options.Mode.Equals("Move", StringComparison.OrdinalIgnoreCase))
                 {
                     var directoryName = Path.GetDirectoryName(filePath);
-                    var fileName = Path.GetFileName(filePath);
-                    var newFileName = claim.FileName;
+                    var newFileName = document.StandardFileName;
 
-                    if (!claim.IsValid || string.IsNullOrEmpty(newFileName))
+                    if (!document.IsValid || string.IsNullOrEmpty(newFileName))
                     {
                         Console.WriteLine($"Couldn't extract {fileName}, skipping...");
                         continue;
@@ -101,14 +108,18 @@ public class Program
                         Console.WriteLine($"Unable to move {fileName} due to exception \"{ioex.Message}\"");
                     }
                 }
+                else if (options.Mode.Equals("Csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!hasWrittenCsvHeaders)
+                    {
+                        document.WriteCsvHeader();
+                    }
+                    document.WriteCsv();
+                    hasWrittenCsvHeaders = true;
+                }
                 else
                 {
-                    if (firstLineInCsv)
-                    {
-                        claim.WriteCsvHeader();
-                    }
-                    claim.WriteCsv();
-                    firstLineInCsv = false;
+                    // ToDo: Change Mode to an enum and fail earlier if it doesn't match the expected values
                 }
             }
             catch (Exception ex)
