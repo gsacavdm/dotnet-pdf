@@ -45,10 +45,10 @@ public class PremeraClaimProcessor : ITextProcessor
             var totalParts = totalLine.Split(" ");
             if (totalParts.Length > 8)
             {
-                premeraClaim.TotalPlanDiscountsAndPayments = totalParts[5].ParseDouble();
-                premeraClaim.Deductible = totalParts[6].ParseDouble();
-                premeraClaim.Coinsurance = totalParts[7].ParseDouble();
-                premeraClaim.NotCovered = totalParts[8].ParseDouble();
+                premeraClaim.TotalPlanDiscountsAndPayments = totalParts[4].ParseDouble();
+                premeraClaim.Deductible = totalParts[5].ParseDouble();
+                premeraClaim.Coinsurance = totalParts[6].ParseDouble();
+                premeraClaim.NotCovered = totalParts[7].ParseDouble();
             }
 
             parsedSuccessfully = true;
