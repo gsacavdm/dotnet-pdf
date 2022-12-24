@@ -20,6 +20,7 @@ public class CignaMoreInfoNeededClaimProcessor : ITextProcessor
         {
             cignaClaimMoreInfo.ClaimNumber = text.ExtractFieldByStartsWith("Claim Number:");
             cignaClaimMoreInfo.ProviderName = text.ExtractFieldByStartsWith("Provider:");
+            cignaClaimMoreInfo.MemberName = text.ExtractFieldByStartsWith("Patient:");
             cignaClaimMoreInfo.DateOfService = text.ExtractFieldByStartsWith("Date of Service:").Split(" - ")[0].ParseDate();
             cignaClaimMoreInfo.DateProcessed = text.ExtractFieldPreviousLineByStartsWith("Subscriber:").ParseDate();
             parsedSuccessfully = true;

@@ -11,6 +11,7 @@ public class RegenceClaim : Document, IDocument
     public DateTime? DateOfService { get; set; }
     public DateTime? DateProcessed { get; set; }
     public string ProviderName { get; set; }
+    public string MemberName { get; set; }
 
     public string PharmacyName { get; set; }
     public DateTime? DateOfFill { get; set; }
@@ -64,6 +65,7 @@ public class RegenceClaim : Document, IDocument
         Console.WriteLine("==============");
 
         Console.WriteLine($"Provider name: {this.ProviderName}");
+        Console.WriteLine($"Member name: {this.MemberName}");
         Console.WriteLine($"Date of service: {this.DateOfService:yyyy/MM/dd}");
         Console.WriteLine($"Date processed: {this.DateProcessed:yyyy/MM/dd}");
         Console.WriteLine($"Pharmacy name: {this.PharmacyName}");
@@ -86,6 +88,7 @@ public class RegenceClaim : Document, IDocument
     public void WriteCsv()
     {
         Console.Write($"\"{this.ProviderName}\",");
+        Console.Write($"\"{this.MemberName}\",");
         Console.Write($"\"{this.DateOfService:yyyy/MM/dd}\",");
         Console.Write($"\"{this.DateProcessed:yyyy/MM/dd}\",");
         Console.Write($"\"{this.PharmacyName}\",");
@@ -106,6 +109,7 @@ public class RegenceClaim : Document, IDocument
     public void WriteCsvHeader()
     {
         Console.Write("ProviderName,");
+        Console.Write("MemberName,");
         Console.Write("DateOfService,");
         Console.Write("DateProcessed,");
         Console.Write("PharmacyName,");

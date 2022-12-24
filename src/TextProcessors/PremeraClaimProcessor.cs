@@ -21,6 +21,8 @@ public class PremeraClaimProcessor : ITextProcessor
 
         try
         {
+            premeraClaim.MemberName = text.ExtractFieldByStartsWith("for").Split(",")[0];
+
             foreach (var line in text)
             {
                 if (line.StartsWith("For services provided by", false, CultureInfo.InvariantCulture))

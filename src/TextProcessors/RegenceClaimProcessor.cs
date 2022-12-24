@@ -19,6 +19,7 @@ public class RegenceClaimProcessor : ITextProcessor
         try
         {
             regenceClaim.ProviderName = text.ExtractFieldByStartsWith("Provider name");
+            regenceClaim.MemberName = text.ExtractFieldByStartsWith("Member name");
             regenceClaim.DateOfService = text.ExtractFieldByStartsWith("Date of service").ParseDate();
             regenceClaim.DateProcessed = text.ExtractFieldByStartsWith("Date processed").ParseDate();
             regenceClaim.PharmacyName = text.ExtractFieldByStartsWith("Pharmacy name");
