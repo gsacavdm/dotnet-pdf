@@ -25,7 +25,7 @@ public class CignaClaim : Document, IDocument
         }
     }
 
-    public bool IsValid => this.AmountBilled != null;
+    public bool IsValid => !string.IsNullOrEmpty(this.ProviderName) && this.AmountBilled != null;
 
     public void WriteCsvHeader()
     {

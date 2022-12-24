@@ -21,7 +21,7 @@ public class CignaMoreInfoNeededClaim : Document, IDocument
         }
     }
 
-    public bool IsValid => this.ClaimNumber != null;
+    public bool IsValid => !string.IsNullOrEmpty(this.ClaimNumber);
 
     public void WriteCsv()
     {

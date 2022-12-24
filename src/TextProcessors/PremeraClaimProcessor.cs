@@ -72,6 +72,6 @@ public class PremeraClaimProcessor : ITextProcessor
         }
 
         document = premeraClaim;
-        return parsedSuccessfully;
+        return parsedSuccessfully && document.IsValid;
     }
 }

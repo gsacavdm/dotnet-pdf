@@ -41,6 +41,6 @@ public class RegenceClaimProcessor : ITextProcessor
         }
 
         document = regenceClaim;
-        return parsedSuccessfully;
+        return parsedSuccessfully && document.IsValid;
     }
 }

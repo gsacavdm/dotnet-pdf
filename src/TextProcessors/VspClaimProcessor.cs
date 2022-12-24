@@ -32,6 +32,6 @@ public class VspClaimProcessor : ITextProcessor
         }
 
         document = vspClaim;
-        return parsedSuccessfully;
+        return parsedSuccessfully && document.IsValid;
     }
 }

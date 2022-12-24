@@ -34,7 +34,8 @@ public class CignaClaimProcessor : ITextProcessor
             cignaClaim.AmountYouOwe = text.ExtractFieldNextLineByEquals("What I Owe").ParseDouble();
 
             var dateProcessedLine = text.ExtractFieldByStartsWith("Cigna received this claim on");
-            cignaClaim.DateProcessed = dateProcessedLine.Split("processed it on ")[1].Replace(".", "").ParseDate();
+            var dateProcessedParts = dateProcessedLine.Split("processed it on ");
+            cignaClaim.DateProcessed = dateProcessedParts.Length > 1 ? dateProcessedParts[1].Replace(".", "").ParseDate() : null;
             parsedSuccessfully = true;
         }
         catch (Exception ex)
@@ -43,6 +44,6 @@ public class CignaClaimProcessor : ITextProcessor
         }
 
         document = cignaClaim;
-        return parsedSuccessfully;
+        return parsedSuccessfully && document.IsValid;
     }
 }

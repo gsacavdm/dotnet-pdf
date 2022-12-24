@@ -30,6 +30,6 @@ public class CignaMoreInfoNeededClaimProcessor : ITextProcessor
         }
 
         document = cignaClaimMoreInfo;
-        return parsedSuccessfully;
+        return parsedSuccessfully && document.IsValid;
     }
 }

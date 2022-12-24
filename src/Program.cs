@@ -73,11 +73,11 @@ public class Program
                     if (textProcessor.TryParse(text, out document))
                     {
                         // No need to keep trying processors
-                        continue;
+                        break;
                     }
                 }
 
-                if (document == null)
+                if (document == null || !document.IsValid)
                 {
                     throw new InvalidOperationException("No valid processor found.");
                 }

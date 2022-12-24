@@ -24,7 +24,7 @@ public class VspClaim : Document, IDocument
         }
     }
 
-    public bool IsValid => this.ProviderName != null;
+    public bool IsValid => !string.IsNullOrEmpty(this.ProviderName);
 
     public void WriteLine()
     {
