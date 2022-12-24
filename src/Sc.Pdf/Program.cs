@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Text;
 
 using CommandLine;
 
-using iText.Kernel.Pdf;
-using iText.Kernel.Pdf.Canvas.Parser;
-using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using Sc.Pdf.Documents;
 using Sc.Pdf.TextProcessors;
 
@@ -59,7 +54,7 @@ public class Program
         {
             try
             {
-                var text = ImportPdf(filePath);
+                var text = PdfParsers.PdfParser.Parse(filePath);
 
                 if (options.Mode.Equals("Simple", StringComparison.OrdinalIgnoreCase))
                 {
@@ -131,24 +126,5 @@ public class Program
                 }
             }
         }
-    }
-
-    public static IEnumerable<string> ImportPdf(string pdfPath)
-    {
-        List<string> text = new();
-
-        using var reader = new PdfReader(pdfPath);
-        using var document = new PdfDocument(reader);
-        for (var pageNumber = 1; pageNumber <= document.GetNumberOfPages(); pageNumber++)
-        {
-            var page = document.GetPage(pageNumber);
-            var currentText = PdfTextExtractor.GetTextFromPage(page, new SimpleTextExtractionStrategy());
-            var pageText = Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(currentText)));
-
-            var textRows = pageText.Split("\n");
-            text.AddRange(textRows);
-        }
-
-        return text;
     }
 }

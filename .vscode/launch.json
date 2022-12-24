@@ -10,12 +10,12 @@
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/src/bin/Debug/net6.0/Sc.Pdf.dll",
+      "program": "${workspaceFolder}/src/Sc.Pdf/bin/Debug/net6.0/Sc.Pdf.dll",
       "args": [
         "-f",
-        "/Users/gsacavdm/Downloads/Claims-Regence/Karla/2022-12-31 Jing Wickenburg Claims VSP.pdf",
+        "/Users/gsacavdm/Desktop/test.pdf",
         "-m",
-        "VspMove"
+        "csv"
       ],
       "cwd": "${workspaceFolder}/src",
       // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

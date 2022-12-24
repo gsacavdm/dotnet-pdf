@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Sc.Pdf.Documents;
 using Sc.Pdf.Extensions;
-using Sc.Pdf.TextProcessors;
 
 namespace Sc.Pdf.TextProcessors;
 
@@ -20,6 +19,7 @@ public class CignaClaimProcessor : ITextProcessor
         {
             cignaClaim.ClaimNumber = text.ExtractFieldNextLineByEquals("Claim # / ID").Split(" ")[0];
             cignaClaim.ProviderName = text.ExtractFieldByStartsWith("for services provided by");
+            cignaClaim.MemberName = text.ExtractFieldByStartsWith("Claim received for ").ToTitleCase();
 
             var dateOfServiceLine = text.ExtractFieldNextLineByEquals("Service date");
             if (string.IsNullOrEmpty(dateOfServiceLine))

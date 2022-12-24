@@ -2,7 +2,7 @@ bin
 obj
 
 .DS_Store
-
-src/pdfs/*
+/**/pdfs/*
+/**/asserts/*
 
 !.gitkeep
