@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Sc.Pdf.Extensions;
 
 public static class StringExtensions
 {
-    public static string Capitalize(this string s) => string.IsNullOrEmpty(s) ? s : s[0..1].ToUpperInvariant() + s[1..].ToLowerInvariant();
+    public static string ToTitleCase(this string s) => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(s.ToLower(CultureInfo.InvariantCulture));
 
     public static double? ParseDouble(this string doubleString)
     {

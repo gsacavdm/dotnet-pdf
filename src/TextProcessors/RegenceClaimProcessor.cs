@@ -26,7 +26,7 @@ public class RegenceClaimProcessor : ITextProcessor
             regenceClaim.NdcNumber = text.ExtractFieldByStartsWith("NDC number");
             regenceClaim.PrescriptionNumber = text.ExtractFieldByStartsWith("Prescription number");
             regenceClaim.DateOfFill = text.ExtractFieldByStartsWith("Date of fill").ParseDate();
-            regenceClaim.MedicationName = text.ExtractFieldByStartsWith("Medication name").Replace("/", "-").Capitalize();
+            regenceClaim.MedicationName = text.ExtractFieldByStartsWith("Medication name").Replace("/", "-").ToTitleCase();
             regenceClaim.PrescriberName = text.ExtractFieldByStartsWith("Prescriber name");
             regenceClaim.ClaimNumber = text.ExtractFieldByStartsWith("Claim number");
             regenceClaim.AmountBilled = text.ExtractFieldByStartsWith("Amount billed").ParseDouble();
