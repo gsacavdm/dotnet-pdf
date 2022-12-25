@@ -5,7 +5,7 @@ using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 
-namespace Sc.Pdf.PdfParsers;
+namespace Sc.PdfProcessor.PdfParsers;
 
 public class PdfParser
 {

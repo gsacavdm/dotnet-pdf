@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace Sc.Pdf.Extensions;
+namespace Sc.PdfProcessor.Extensions;
 
 public static class DateExtensions
 {

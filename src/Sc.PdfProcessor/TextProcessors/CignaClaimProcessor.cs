@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Sc.Pdf.Documents;
-using Sc.Pdf.Extensions;
+using Sc.PdfProcessor.Documents;
+using Sc.PdfProcessor.Extensions;
 
-namespace Sc.Pdf.TextProcessors;
+namespace Sc.PdfProcessor.TextProcessors;
 
 public class CignaClaimProcessor : ITextProcessor
 {

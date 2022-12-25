@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Sc.Pdf.Documents;
+namespace Sc.PdfProcessor.Documents;
 
 public interface IDocument
 {

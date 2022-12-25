@@ -1,11 +1,11 @@
 using Xunit;
-using Sc.Pdf.TextProcessors;
-using Sc.Pdf.Documents;
+using Sc.PdfProcessor.TextProcessors;
+using Sc.PdfProcessor.Documents;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Sc.Pdf.Test;
+namespace Sc.PdfProcessor.Test;
 
 public class TextProcessorsTests
 {

@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sc.Pdf\Sc.Pdf.csproj" />
+    <ProjectReference Include="..\Sc.PdfProcessor\Sc.PdfProcessor.csproj" />
   </ItemGroup>
 
 </Project>

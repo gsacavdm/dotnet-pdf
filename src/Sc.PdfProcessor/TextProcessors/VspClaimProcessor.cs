@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Sc.Pdf.Documents;
-using Sc.Pdf.Extensions;
-using Sc.Pdf.TextProcessors;
+using Sc.PdfProcessor.Documents;
+using Sc.PdfProcessor.Extensions;
+using Sc.PdfProcessor.TextProcessors;
 
-namespace Sc.Pdf.TextProcessors;
+namespace Sc.PdfProcessor.TextProcessors;
 
 public class VspClaimProcessor : ITextProcessor
 {

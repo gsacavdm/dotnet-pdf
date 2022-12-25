@@ -1,6 +1,6 @@
 using CommandLine;
 
-namespace Sc.Pdf;
+namespace Sc.PdfProcessor;
 
 public class Options
 {

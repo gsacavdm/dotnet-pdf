@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Sc.Pdf.Extensions;
+namespace Sc.PdfProcessor.Extensions;
 
 public static class InsuranceExtensions
 {

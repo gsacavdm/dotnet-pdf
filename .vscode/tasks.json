@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/src/Sc.Pdf.sln",
+        "${workspaceFolder}/src/Sc.PdfProcessor.sln",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -19,7 +19,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/src/Sc.Pdf/Sc.Pdf.csproj",
+        "${workspaceFolder}/src/Sc.PdfProcessor/Sc.PdfProcessor.csproj",
         "-c",
         "Release",
         "/property:GenerateFullPaths=true",
@@ -35,7 +35,7 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/src/Sc.Pdf/Sc.Pdf.csproj"
+        "${workspaceFolder}/src/Sc.PdfPdfProcessor/Sc.PdfProcessor.csproj"
       ],
       "problemMatcher": "$msCompile"
     },
@@ -45,7 +45,7 @@
       "type": "process",
       "args": [
         "test",
-        "${workspaceFolder}/src/Sc.Pdf.sln",
+        "${workspaceFolder}/src/ScPdfProcessor.PdfProcessor.sln",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],

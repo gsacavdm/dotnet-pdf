@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Sc.Pdf.Extensions;
+using Sc.PdfProcessor.Extensions;
 
-namespace Sc.Pdf.Documents;
+namespace Sc.PdfProcessor.Documents;
 
 public class VspClaim : Document, IDocument
 {

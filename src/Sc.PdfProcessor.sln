@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sc.Pdf", "Sc.Pdf\Sc.Pdf.csproj", "{89F2C76B-49B7-4E5E-B504-9BE438A62213}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sc.PdfProcessor", "Sc.PdfProcessor\Sc.PdfProcessor.csproj", "{89F2C76B-49B7-4E5E-B504-9BE438A62213}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sc.Pdf.Test", "Sc.Pdf.Test\Sc.Pdf.Test.csproj", "{D1A31A1E-9E9F-47A6-B2DA-F6255831C141}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sc.PdfProcessor.Test", "Sc.PdfProcessor.Test\Sc.PdfProcessor.Test.csproj", "{D1A31A1E-9E9F-47A6-B2DA-F6255831C141}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

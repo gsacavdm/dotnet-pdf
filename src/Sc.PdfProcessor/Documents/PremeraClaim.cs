@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Sc.Pdf.Extensions;
+using Sc.PdfProcessor.Extensions;
 
-namespace Sc.Pdf.Documents;
+namespace Sc.PdfProcessor.Documents;
 
 public class PremeraClaim : Document, IDocument
 {

@@ -4,10 +4,10 @@ using System.IO;
 
 using CommandLine;
 
-using Sc.Pdf.Documents;
-using Sc.Pdf.TextProcessors;
+using Sc.PdfProcessor.Documents;
+using Sc.PdfProcessor.TextProcessors;
 
-namespace Sc.Pdf;
+namespace Sc.PdfProcessor;
 
 public class Program
 {
@@ -42,12 +42,13 @@ public class Program
             return;
         }
 
-        List<ITextProcessor> textProcessors = new();
-        textProcessors.Add(new CignaClaimProcessor());
-        textProcessors.Add(new CignaMoreInfoNeededClaimProcessor());
-        textProcessors.Add(new PremeraClaimProcessor());
-        textProcessors.Add(new RegenceClaimProcessor());
-        textProcessors.Add(new VspClaimProcessor());
+        var textProcessors = new List<ITextProcessor> {
+            new CignaClaimProcessor(),
+            new CignaMoreInfoNeededClaimProcessor(),
+            new PremeraClaimProcessor(),
+            new RegenceClaimProcessor(),
+            new VspClaimProcessor(),
+        };
 
         var hasWrittenCsvHeaders = false;
         foreach (var filePath in filePaths)
