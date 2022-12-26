@@ -22,7 +22,7 @@ public class TextProcessorsTests
         var claim = document as CignaClaim;
         Assert.NotNull(claim);
 
-        // To avoid CS8602: Dereferenceof a possibly null ref
+        // To avoid CS8602: Dereference of a possibly null ref
         if (claim == null)
         {
             return;
@@ -38,9 +38,17 @@ public class TextProcessorsTests
         Assert.Equal(expected.RootElement.GetProperty("MemberName").GetString(), claim.MemberName);
         Assert.Equal(expected.RootElement.GetProperty("ProviderName").GetString(), claim.ProviderName);
 
+        Assert.Equal(expected.RootElement.GetProperty("AmountNotCovered").GetDouble(), claim.AmountNotCovered);
+        Assert.Equal(expected.RootElement.GetProperty("AllowedAmount").GetDouble(), claim.AllowedAmount);
+        Assert.Equal(expected.RootElement.GetProperty("Copay").GetDouble(), claim.Copay);
+        Assert.Equal(expected.RootElement.GetProperty("Deductible").GetDouble(), claim.Deductible);
+        Assert.Equal(expected.RootElement.GetProperty("AmountPaid").GetDouble(), claim.AmountPaid);
+        Assert.Equal(expected.RootElement.GetProperty("Coinsurance").GetDouble(), claim.Coinsurance);
+
         Assert.Equal(text, claim.SourceText);
         Assert.Null(claim.SourceFileName);
     }
+
     [Fact]
     public async Task PremeraClaimProcessor()
     {
@@ -54,7 +62,7 @@ public class TextProcessorsTests
         var claim = document as PremeraClaim;
         Assert.NotNull(claim);
 
-        // To avoid CS8602: Dereferenceof a possibly null ref
+        // To avoid CS8602: Dereference of a possibly null ref
         if (claim == null)
         {
             return;

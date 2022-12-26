@@ -36,6 +36,19 @@ public class CignaClaimProcessor : ITextProcessor
             var dateProcessedLine = text.ExtractFieldByStartsWith("Cigna received this claim on");
             var dateProcessedParts = dateProcessedLine.Split("processed it on ");
             cignaClaim.DateProcessed = dateProcessedParts.Length > 1 ? dateProcessedParts[1].Replace(".", "").ParseDate() : null;
+
+
+            var totalLine = text.ExtractFieldByStartsWith("Total");
+            var totalParts = totalLine.Split(" ");
+            if (totalParts.Length == 9)
+            {
+                cignaClaim.AmountNotCovered = totalParts[2].ParseDouble();
+                cignaClaim.AllowedAmount = totalParts[3].ParseDouble();
+                cignaClaim.Copay = totalParts[4].ParseDouble();
+                cignaClaim.Deductible = totalParts[5].ParseDouble();
+                cignaClaim.Coinsurance = totalParts[7].ParseDouble();
+            }
+
             parsedSuccessfully = true;
         }
         catch (Exception ex)

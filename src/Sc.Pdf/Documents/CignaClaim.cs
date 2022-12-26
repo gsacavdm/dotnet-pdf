@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Sc.Pdf.Extensions;
 
 namespace Sc.Pdf.Documents;
@@ -14,7 +13,12 @@ public class CignaClaim : Document, IDocument
 
     public double? AmountBilled { get; set; }
     public double? Discount { get; set; }
+    public double? AmountNotCovered { get; set; }
+    public double? AllowedAmount { get; set; }
+    public double? Copay { get; set; }
+    public double? Deductible { get; set; }
     public double? AmountPaid { get; set; }
+    public double? Coinsurance { get; set; }
     public double? AmountYouOwe { get; set; }
 
     public override string StandardFileName
@@ -37,7 +41,12 @@ public class CignaClaim : Document, IDocument
         Console.Write("ClaimNumber,");
         Console.Write("AmountBilled,");
         Console.Write("Discount,");
+        Console.Write("AmountNotCovered,");
+        Console.Write("AllowedAmount,");
+        Console.Write("Copay,");
+        Console.Write("Deductible,");
         Console.Write("AmountPaid,");
+        Console.Write("Coinsurance,");
         Console.Write("AmountYouOwe");
 
         Console.WriteLine();
@@ -52,7 +61,12 @@ public class CignaClaim : Document, IDocument
         Console.Write($"\"{this.ClaimNumber}\",");
         Console.Write($"\"{this.AmountBilled}\",");
         Console.Write($"\"{this.Discount}\",");
+        Console.Write($"\"{this.AmountNotCovered}\",");
+        Console.Write($"\"{this.AllowedAmount}\",");
+        Console.Write($"\"{this.Copay}\",");
+        Console.Write($"\"{this.Deductible}\",");
         Console.Write($"\"{this.AmountPaid}\",");
+        Console.Write($"\"{this.Coinsurance}\",");
         Console.Write($"\"{this.AmountYouOwe}\"");
 
         Console.WriteLine();
@@ -69,7 +83,12 @@ public class CignaClaim : Document, IDocument
         Console.WriteLine($"Claim number: {this.ClaimNumber}");
         Console.WriteLine($"Amount billed: {this.AmountBilled}");
         Console.WriteLine($"Discount: {this.Discount}");
+        Console.WriteLine($"Amount not covered: {this.AmountNotCovered}");
+        Console.WriteLine($"Allowed amount: {this.AllowedAmount}");
+        Console.WriteLine($"Copay: {this.Copay}");
+        Console.WriteLine($"Deductible: {this.Deductible}");
         Console.WriteLine($"Amount paid: {this.AmountPaid}");
+        Console.WriteLine($"Coinsurance: {this.Coinsurance}");
         Console.WriteLine($"Amount you owe: {this.AmountYouOwe}");
 
         Console.WriteLine("==============");
