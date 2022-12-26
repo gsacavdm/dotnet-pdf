@@ -21,6 +21,15 @@ public class CignaClaim : Document, IDocument
     public double? Coinsurance { get; set; }
     public double? AmountYouOwe { get; set; }
 
+    public CignaClaimType ClaimType { get; set; }
+
+    public enum CignaClaimType
+    {
+        EoB,
+        Web,
+        MoreInfoNeeded
+    }
+
     public override string StandardFileName
     {
         get
@@ -30,7 +39,13 @@ public class CignaClaim : Document, IDocument
         }
     }
 
-    public bool IsValid => !string.IsNullOrEmpty(this.ProviderName) && this.AmountBilled != null;
+    public bool IsValid =>
+        !string.IsNullOrEmpty(this.ProviderName)
+        && this.DateOfService != null
+        && (
+            this.AmountBilled != null
+            || this.ClaimType == CignaClaimType.MoreInfoNeeded
+    );
 
     public void WriteCsvHeader()
     {

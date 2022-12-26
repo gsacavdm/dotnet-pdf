@@ -46,7 +46,7 @@ public class CignaWebClaimProcessor : ITextProcessor
 
                 cignaClaim.AmountYouOwe = totalParts[9].ParseDouble();
             }
-
+            cignaClaim.ClaimType = CignaClaim.CignaClaimType.Web;
             parsedSuccessfully = true;
         }
         catch (Exception ex)

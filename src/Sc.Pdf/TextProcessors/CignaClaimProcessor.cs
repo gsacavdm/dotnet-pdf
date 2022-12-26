@@ -49,6 +49,7 @@ public class CignaClaimProcessor : ITextProcessor
                 cignaClaim.Coinsurance = totalParts[7].ParseDouble();
             }
 
+            cignaClaim.ClaimType = CignaClaim.CignaClaimType.EoB;
             parsedSuccessfully = true;
         }
         catch (Exception ex)
