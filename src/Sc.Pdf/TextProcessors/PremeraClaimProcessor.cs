@@ -43,7 +43,7 @@ public class PremeraClaimProcessor : ITextProcessor
 
             var totalLine = text.ExtractFieldByStartsWith("Totals");
             var totalParts = totalLine.Split(" ");
-            if (totalParts.Length > 8)
+            if (totalParts.Length == 9)
             {
                 premeraClaim.TotalPlanDiscountsAndPayments = totalParts[4].ParseDouble();
                 premeraClaim.Deductible = totalParts[5].ParseDouble();
