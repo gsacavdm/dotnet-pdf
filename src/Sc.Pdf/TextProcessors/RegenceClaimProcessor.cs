@@ -30,7 +30,8 @@ public class RegenceClaimProcessor : ITextProcessor
             regenceClaim.PrescriberName = text.ExtractFieldByStartsWith("Prescriber name");
             regenceClaim.ClaimNumber = text.ExtractFieldByStartsWith("Claim number");
             regenceClaim.AmountBilled = text.ExtractFieldByStartsWith("Amount billed").ParseDouble();
-            regenceClaim.DiscountedRate = text.ExtractFieldByStartsWith("Your discounted rate").ParseDouble();
+            regenceClaim.DiscountedRate = text.ExtractFieldByStartsWith("Your discounted rate").ParseDouble()
+                ?? text.ExtractFieldByStartsWith("Y our discounted rate").ParseDouble(); // Some PDFs are parsed like this for some reason...
             regenceClaim.AmountPaid = text.ExtractFieldByStartsWith("Amount we paid").ParseDouble();
             regenceClaim.AmountYouOwe = text.ExtractFieldByStartsWith("Amount you owe").ParseDouble()
                 ?? text.ExtractFieldByStartsWith("Amount you may owe").ParseDouble();
