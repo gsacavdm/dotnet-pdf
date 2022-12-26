@@ -4,6 +4,7 @@ using Sc.Pdf.Documents;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Sc.Pdf.Extensions;
 
 namespace Sc.Pdf.Test;
 
@@ -35,6 +36,46 @@ public class TextProcessorsTests
         Assert.Equal(expected.RootElement.GetProperty("DateOfService").GetDateTime(), claim.DateOfService);
         Assert.Equal(expected.RootElement.GetProperty("DateProcessed").GetDateTime(), claim.DateProcessed);
         Assert.Equal(expected.RootElement.GetProperty("Discount").GetDouble(), claim.Discount);
+        Assert.Equal(expected.RootElement.GetProperty("MemberName").GetString(), claim.MemberName);
+        Assert.Equal(expected.RootElement.GetProperty("ProviderName").GetString(), claim.ProviderName);
+
+        Assert.Equal(expected.RootElement.GetProperty("AmountNotCovered").GetDouble(), claim.AmountNotCovered);
+        Assert.Equal(expected.RootElement.GetProperty("AllowedAmount").GetDouble(), claim.AllowedAmount);
+        Assert.Equal(expected.RootElement.GetProperty("Copay").GetDouble(), claim.Copay);
+        Assert.Equal(expected.RootElement.GetProperty("Deductible").GetDouble(), claim.Deductible);
+        Assert.Equal(expected.RootElement.GetProperty("AmountPaid").GetDouble(), claim.AmountPaid);
+        Assert.Equal(expected.RootElement.GetProperty("Coinsurance").GetDouble(), claim.Coinsurance);
+
+        Assert.Equal(text, claim.SourceText);
+        Assert.Null(claim.SourceFileName);
+    }
+
+    [Fact]
+    public async Task CignaWebClaimProcessor()
+    {
+        var text = PdfParsers.PdfParser.Parse("./pdfs/cignaweb.pdf");
+        using var file = File.Open("./asserts/cignaweb.json", FileMode.Open);
+        var expected = await JsonDocument.ParseAsync(file);
+
+        var processor = new CignaWebClaimProcessor();
+        Assert.True(processor.TryParse(text, out var document));
+
+        var claim = document as CignaClaim;
+        Assert.NotNull(claim);
+
+        // To avoid CS8602: Dereference of a possibly null ref
+        if (claim == null)
+        {
+            return;
+        }
+
+        Assert.True(claim.IsValid);
+        Assert.Null(claim.ParseException);
+
+        Assert.Equal(expected.RootElement.GetProperty("ClaimNumber").GetString(), claim.ClaimNumber);
+        Assert.Equal(expected.RootElement.GetProperty("DateOfService").GetDateTime(), claim.DateOfService);
+        Assert.Equal(expected.RootElement.GetProperty("DateProcessed").GetDateTime(), claim.DateProcessed);
+        Assert.Equal(expected.RootElement.GetProperty("Discount").GetNullableDouble(), claim.Discount);
         Assert.Equal(expected.RootElement.GetProperty("MemberName").GetString(), claim.MemberName);
         Assert.Equal(expected.RootElement.GetProperty("ProviderName").GetString(), claim.ProviderName);
 

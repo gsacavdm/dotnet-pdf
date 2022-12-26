@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Sc.Pdf.Extensions;
 
@@ -91,5 +92,21 @@ public static class StringExtensions
 
         textRow = textRow.Replace(searchText, "").Trim();
         return textRow;
+    }
+
+
+    /// <summary>
+    /// Extracts text from the first line which matches the regex provided.
+    /// </summary>
+    /// <param name="regex">Regex used to pattern match. Must have the &lt;value&gt; token to indicate which value should be extracted.</param>
+    public static string ExtractFieldByRegex(this IEnumerable<string> textRows, string regex)
+    {
+        if (!regex.Contains("<value>"))
+        {
+            throw new ArgumentException("Regex must contain <value> token to indicate value to be returned.");
+        }
+
+        var textRow = textRows.FirstOrDefault(s => Regex.IsMatch(s, regex));
+        return textRow == null ? string.Empty : Regex.Match(textRow, regex).Groups["value"].Value;
     }
 }

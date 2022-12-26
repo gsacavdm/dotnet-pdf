@@ -44,6 +44,7 @@ public class Program
 
         List<ITextProcessor> textProcessors = new();
         textProcessors.Add(new CignaClaimProcessor());
+        textProcessors.Add(new CignaWebClaimProcessor());
         textProcessors.Add(new CignaMoreInfoNeededClaimProcessor());
         textProcessors.Add(new PremeraClaimProcessor());
         textProcessors.Add(new RegenceClaimProcessor());
