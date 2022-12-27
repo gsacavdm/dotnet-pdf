@@ -4,7 +4,7 @@ using Sc.Pdf.Extensions;
 
 namespace Sc.Pdf.Documents;
 
-public class VspClaim : Document, IDocument
+public class VspClaim : DocumentBase, IDocument
 {
 
     public string ClaimNumber { get; set; }
@@ -26,47 +26,4 @@ public class VspClaim : Document, IDocument
     }
 
     public bool IsValid => !string.IsNullOrEmpty(this.ProviderName);
-
-    public void WriteLine()
-    {
-        Console.WriteLine("==============");
-
-        Console.WriteLine($"Provider name: {this.ProviderName}");
-        Console.WriteLine($"Member name: {this.MemberName}");
-        Console.WriteLine($"Date of service: {this.DateOfService:yyyy/MM/dd}");
-        Console.WriteLine($"Date of notice: {this.DateOfNotice:yyyy/MM/dd}");
-        Console.WriteLine($"Claim number: {this.ClaimNumber}");
-        Console.WriteLine($"Amount billed: {this.AmountBilled}");
-        Console.WriteLine($"Amount paid: {this.AmountPaid}");
-
-        Console.WriteLine("==============");
-
-        Console.WriteLine($"Standard file name: {this.StandardFileName}");
-    }
-
-    public void WriteCsv()
-    {
-        Console.Write($"\"{this.ProviderName}\",");
-        Console.Write($"\"{this.MemberName}\",");
-        Console.Write($"\"{this.DateOfService:yyyy/MM/dd}\",");
-        Console.Write($"\"{this.DateOfNotice:yyyy/MM/dd}\",");
-        Console.Write($"\"{this.ClaimNumber}\",");
-        Console.Write($"\"{this.AmountBilled}\",");
-        Console.Write($"\"{this.AmountPaid}\",");
-
-        Console.WriteLine();
-    }
-
-    public void WriteCsvHeader()
-    {
-        Console.Write("ProviderName,");
-        Console.Write("MemberName,");
-        Console.Write("DateOfService,");
-        Console.Write("DateOfNotice,");
-        Console.Write("ClaimNumber,");
-        Console.Write("AmountBilled,");
-        Console.Write("AmountPaid");
-
-        Console.WriteLine();
-    }
 }
