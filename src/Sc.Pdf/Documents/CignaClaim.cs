@@ -65,7 +65,8 @@ public class CignaClaim : Document, IDocument
         Console.Write("Deductible,");
         Console.Write("AmountPaid,");
         Console.Write("Coinsurance,");
-        Console.Write("AmountYouOwe");
+        Console.Write("AmountYouOwe,");
+        Console.Write("ClaimType");
 
         Console.WriteLine();
     }
@@ -85,7 +86,8 @@ public class CignaClaim : Document, IDocument
         Console.Write($"\"{this.Deductible}\",");
         Console.Write($"\"{this.AmountPaid}\",");
         Console.Write($"\"{this.Coinsurance}\",");
-        Console.Write($"\"{this.AmountYouOwe}\"");
+        Console.Write($"\"{this.AmountYouOwe}\",");
+        Console.Write($"\"{this.ClaimType}\"");
 
         Console.WriteLine();
     }
@@ -108,6 +110,7 @@ public class CignaClaim : Document, IDocument
         Console.WriteLine($"Amount paid: {this.AmountPaid}");
         Console.WriteLine($"Coinsurance: {this.Coinsurance}");
         Console.WriteLine($"Amount you owe: {this.AmountYouOwe}");
+        Console.WriteLine($"Claim type: {this.ClaimType}");
 
         Console.WriteLine("==============");
 
