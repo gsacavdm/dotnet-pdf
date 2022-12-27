@@ -88,6 +88,8 @@ public class TextProcessorsTests
         Assert.Equal(expected.RootElement.GetProperty("AmountPaid").GetNullableDouble(), claim.AmountPaid);
         Assert.Equal(expected.RootElement.GetProperty("Coinsurance").GetNullableDouble(), claim.Coinsurance);
 
+        Assert.Equal(expected.RootElement.GetProperty("StandardFileName").GetString(), claim.StandardFileName);
+
         Assert.Equal(text, claim.SourceText);
         Assert.Null(claim.SourceFileName);
     }
@@ -129,6 +131,8 @@ public class TextProcessorsTests
         Assert.Equal(expected.RootElement.GetProperty("AmountPaid").GetNullableDouble(), claim.AmountPaid);
         Assert.Equal(expected.RootElement.GetProperty("Coinsurance").GetNullableDouble(), claim.Coinsurance);
 
+        Assert.Equal(expected.RootElement.GetProperty("StandardFileName").GetString(), claim.StandardFileName);
+
         Assert.Equal(text, claim.SourceText);
         Assert.Null(claim.SourceFileName);
     }
@@ -167,6 +171,8 @@ public class TextProcessorsTests
         Assert.Equal(expected.RootElement.GetProperty("PaidByHealthPlan").GetNullableDouble(), claim.PaidByHealthPlan);
         Assert.Equal(expected.RootElement.GetProperty("ProviderName").GetString(), claim.ProviderName);
         Assert.Equal(expected.RootElement.GetProperty("TotalPlanDiscountsAndPayments").GetNullableDouble(), claim.TotalPlanDiscountsAndPayments);
+
+        Assert.Equal(expected.RootElement.GetProperty("StandardFileName").GetString(), claim.StandardFileName);
 
         Assert.Equal(text, claim.SourceText);
         Assert.Null(claim.SourceFileName);

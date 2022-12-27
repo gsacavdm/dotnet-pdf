@@ -35,7 +35,10 @@ public class CignaClaim : Document, IDocument
         get
         {
             var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
-            return $"{this.DateOfService.ToDateString()} {providerName} Claim Cigna {this.ClaimNumber} {this.DateProcessed.ToDateString()}.pdf";
+            var qualifier = this.ClaimType == CignaClaimType.Web ? " Web" :
+                this.ClaimType == CignaClaimType.MoreInfoNeeded ? " More Info Needed" :
+                "";
+            return $"{this.DateOfService.ToDateString()} {providerName} Claim Cigna {this.ClaimNumber} {this.DateProcessed.ToDateString()}{qualifier}.pdf";
         }
     }
 
