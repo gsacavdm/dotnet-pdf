@@ -30,19 +30,16 @@ public class CignaClaim : DocumentBase, IDocument
         MoreInfoNeeded
     }
 
-    public override string StandardFileName
+    protected override string GetStandardFileName()
     {
-        get
-        {
-            var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
-            var qualifier = this.ClaimType == CignaClaimType.Web ? " Web" :
-                this.ClaimType == CignaClaimType.MoreInfoNeeded ? " More Info Needed" :
-                "";
-            return $"{this.DateOfService.ToDateString()} {providerName} Claim Cigna {this.ClaimNumber} {this.DateProcessed.ToDateString()}{qualifier}.pdf";
-        }
+        var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
+        var qualifier = this.ClaimType == CignaClaimType.Web ? " Web" :
+            this.ClaimType == CignaClaimType.MoreInfoNeeded ? " More Info Needed" :
+            "";
+        return $"{this.DateOfService.ToDateString()} {providerName} Claim Cigna {this.ClaimNumber} {this.DateProcessed.ToDateString()}{qualifier}.pdf";
     }
 
-    public bool IsValid =>
+    protected override bool GetIsValid() =>
         !string.IsNullOrEmpty(this.ProviderName)
         && this.DateOfService != null
         && (

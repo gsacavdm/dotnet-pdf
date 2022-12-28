@@ -24,39 +24,36 @@ public class RegenceClaim : DocumentBase, IDocument
     public double? DiscountedRate { get; set; }
     public double? AmountPaid { get; set; }
     public double? AmountYouOwe { get; set; }
-    public override string StandardFileName
+    protected override string GetStandardFileName()
     {
-        get
+        var dateOfService = this.DateOfService;
+        var dateProcessed = this.DateProcessed;
+        var providerName = this.ProviderName;
+        var claimNumber = this.ClaimNumber;
+
+        var pharmacyName = string.Empty;
+        var medicationName = string.Empty;
+
+        if (!string.IsNullOrEmpty(this.PharmacyName))
         {
-            var dateOfService = this.DateOfService;
-            var dateProcessed = this.DateProcessed;
-            var providerName = this.ProviderName;
-            var claimNumber = this.ClaimNumber;
+            dateOfService = this.DateOfFill;
+            dateProcessed = this.DateOfFill;
+            providerName = this.PrescriberName;
 
-            var pharmacyName = string.Empty;
-            var medicationName = string.Empty;
-
-            if (!string.IsNullOrEmpty(this.PharmacyName))
-            {
-                dateOfService = this.DateOfFill;
-                dateProcessed = this.DateOfFill;
-                providerName = this.PrescriberName;
-
-                pharmacyName = this.PharmacyName.Split("#")[0].Trim();
-                medicationName = this.MedicationName.Split(" ")[0];
-                claimNumber = $"{this.PrescriptionNumber}-{this.DateOfFill.ToShortDateString()}-{this.NdcNumber}";
-            }
-
-            providerName = InsuranceExtensions.MapProvider(providerName);
-
-            if (!string.IsNullOrEmpty(this.PharmacyName))
-            {
-                providerName = $"{providerName} {pharmacyName} {medicationName}";
-            }
-
-            return string.IsNullOrEmpty(providerName) ? string.Empty : $"{dateOfService.ToDateString()} {providerName} Claim Regence {claimNumber} {dateProcessed.ToDateString()}.pdf";
+            pharmacyName = this.PharmacyName.Split("#")[0].Trim();
+            medicationName = this.MedicationName.Split(" ")[0];
+            claimNumber = $"{this.PrescriptionNumber}-{this.DateOfFill.ToShortDateString()}-{this.NdcNumber}";
         }
+
+        providerName = InsuranceExtensions.MapProvider(providerName);
+
+        if (!string.IsNullOrEmpty(this.PharmacyName))
+        {
+            providerName = $"{providerName} {pharmacyName} {medicationName}";
+        }
+
+        return string.IsNullOrEmpty(providerName) ? string.Empty : $"{dateOfService.ToDateString()} {providerName} Claim Regence {claimNumber} {dateProcessed.ToDateString()}.pdf";
     }
 
-    public bool IsValid => this.AmountYouOwe != null;
+    protected override bool GetIsValid() => this.AmountYouOwe != null;
 }

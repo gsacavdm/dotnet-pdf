@@ -15,7 +15,12 @@ public abstract class DocumentBase
     [CsvIgnore]
     public Exception ParseException { get; set; }
     [CsvIgnore]
-    public abstract string StandardFileName { get; }
+    public string StandardFileName => GetStandardFileName();
+    [CsvIgnore]
+    public bool IsValid => GetIsValid();
+
+    protected abstract string GetStandardFileName();
+    protected abstract bool GetIsValid();
 
     private IEnumerable<PropertyInfo> GetProperties()
     {

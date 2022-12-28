@@ -16,14 +16,11 @@ public class VspClaim : DocumentBase, IDocument
     public double? AmountBilled { get; set; }
     public double? AmountPaid { get; set; }
 
-    public override string StandardFileName
+    protected override string GetStandardFileName()
     {
-        get
-        {
-            var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
-            return $"{this.DateOfService.ToDateString()} {providerName} Claim Vsp {this.ClaimNumber} {this.DateOfNotice.ToDateString()}.pdf";
-        }
+        var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
+        return $"{this.DateOfService.ToDateString()} {providerName} Claim Vsp {this.ClaimNumber} {this.DateOfNotice.ToDateString()}.pdf";
     }
 
-    public bool IsValid => !string.IsNullOrEmpty(this.ProviderName);
+    protected override bool GetIsValid() => !string.IsNullOrEmpty(this.ProviderName);
 }

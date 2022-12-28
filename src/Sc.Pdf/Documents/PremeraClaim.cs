@@ -25,14 +25,11 @@ public class PremeraClaim : DocumentBase, IDocument
     public double? NotCovered { get; set; }
     public double? YourResponsibility { get; set; }
 
-    public override string StandardFileName
+    protected override string GetStandardFileName()
     {
-        get
-        {
-            var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
-            return $"{this.DateOfService.ToDateString()} {providerName} Claim Premera {this.ClaimNumber} {this.DateProcessed.ToDateString()}.pdf";
-        }
+        var providerName = InsuranceExtensions.MapProvider(this.ProviderName);
+        return $"{this.DateOfService.ToDateString()} {providerName} Claim Premera {this.ClaimNumber} {this.DateProcessed.ToDateString()}.pdf";
     }
 
-    public bool IsValid => !string.IsNullOrEmpty(this.ProviderName);
+    protected override bool GetIsValid() => !string.IsNullOrEmpty(this.ProviderName);
 }

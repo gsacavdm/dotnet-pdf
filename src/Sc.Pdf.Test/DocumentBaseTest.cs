@@ -11,7 +11,8 @@ public class DocumentBaseTest
         public string? PropB { get; set; }
         [CsvIgnore]
         public string? PropIgnore { get; set; }
-        public override string StandardFileName => "MyStandardFileNames";
+        protected override string GetStandardFileName() => "MyStandardFileNames";
+        protected override bool GetIsValid() => true;
     }
 
     [Fact]
