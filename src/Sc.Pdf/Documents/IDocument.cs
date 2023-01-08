@@ -11,7 +11,7 @@ public interface IDocument
     public Exception ParseException { get; }
     public bool IsValid { get; }
 
-    public void WriteLine();
+    public void WriteText();
     public void WriteCsv();
     public void WriteCsvHeader();
 }
