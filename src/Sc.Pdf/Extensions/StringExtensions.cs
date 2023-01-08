@@ -29,61 +29,69 @@ public static class StringExtensions
         return textRow ?? string.Empty;
     }
 
-    public static string ExtractFieldNextLineByEquals(this IEnumerable<string> textRows, string searchText)
+    public static string ExtractFieldNextLineByEquals(this IEnumerable<string> textRows, string searchText, int matchNumber = 1)
     {
-        var searchLine = textRows.FirstOrDefault(line => line.Equals(searchText, StringComparison.Ordinal));
+        var matches = textRows.Select((textRow, index) => new { TextRow = textRow, Index = index })
+            .Where(s => s.TextRow.Equals(searchText, StringComparison.OrdinalIgnoreCase));
+        var searchLine = matches.ElementAtOrDefault(matchNumber - 1);
         if (searchLine == null)
         {
             return string.Empty;
         }
 
-        var searchPosition = Array.IndexOf(textRows.ToArray(), searchLine);
-        var textRow = textRows.ElementAtOrDefault(searchPosition + 1);
+        var textRow = textRows.ElementAtOrDefault(searchLine.Index + 1);
         return textRow ?? string.Empty;
     }
 
-    public static string ExtractFieldNextLineByStartsWith(this IEnumerable<string> textRows, string searchText)
+    public static string ExtractFieldNextLineByStartsWith(this IEnumerable<string> textRows, string searchText, int matchNumber = 1)
     {
-        var searchLine = textRows.FirstOrDefault(line => line.StartsWith(searchText, StringComparison.Ordinal));
+        var matches = textRows.Select((textRow, index) => new { TextRow = textRow, Index = index })
+            .Where(s => s.TextRow.StartsWith(searchText, StringComparison.InvariantCulture));
+        var searchLine = matches.ElementAtOrDefault(matchNumber - 1);
+
         if (searchLine == null)
         {
             return string.Empty;
         }
 
-        var searchPosition = Array.IndexOf(textRows.ToArray(), searchLine);
-        var textRow = textRows.ElementAtOrDefault(searchPosition + 1);
+        var textRow = textRows.ElementAtOrDefault(searchLine.Index + 1);
         return textRow ?? string.Empty;
     }
 
-    public static string ExtractFieldPreviousLineByEquals(this IEnumerable<string> textRows, string searchText)
+    public static string ExtractFieldPreviousLineByEquals(this IEnumerable<string> textRows, string searchText, int matchNumber = 1)
     {
-        var searchLine = textRows.FirstOrDefault(line => line.Equals(searchText, StringComparison.Ordinal));
+        var matches = textRows.Select((textRow, index) => new { TextRow = textRow, Index = index })
+            .Where(s => s.TextRow.Equals(searchText, StringComparison.OrdinalIgnoreCase));
+        var searchLine = matches.ElementAtOrDefault(matchNumber - 1);
+
         if (searchLine == null)
         {
             return string.Empty;
         }
 
-        var searchPosition = Array.IndexOf(textRows.ToArray(), searchLine);
-        var textRow = textRows.ElementAtOrDefault(searchPosition - 1);
+        var textRow = textRows.ElementAtOrDefault(searchLine.Index - 1);
         return textRow ?? string.Empty;
     }
 
-    public static string ExtractFieldPreviousLineByStartsWith(this IEnumerable<string> textRows, string searchText)
+    public static string ExtractFieldPreviousLineByStartsWith(this IEnumerable<string> textRows, string searchText, int matchNumber = 1)
     {
-        var searchLine = textRows.FirstOrDefault(line => line.StartsWith(searchText, StringComparison.Ordinal));
+        var matches = textRows.Select((textRow, index) => new { TextRow = textRow, Index = index })
+            .Where(s => s.TextRow.StartsWith(searchText, StringComparison.InvariantCulture));
+        var searchLine = matches.ElementAtOrDefault(matchNumber - 1);
+
         if (searchLine == null)
         {
             return string.Empty;
         }
 
-        var searchPosition = Array.IndexOf(textRows.ToArray(), searchLine);
-        var textRow = textRows.ElementAtOrDefault(searchPosition - 1);
+        var textRow = textRows.ElementAtOrDefault(searchLine.Index - 1);
         return textRow ?? string.Empty;
     }
 
-    public static string ExtractFieldByStartsWith(this IEnumerable<string> textRows, string searchText)
+    public static string ExtractFieldByStartsWith(this IEnumerable<string> textRows, string searchText, int matchNumber = 1)
     {
-        var textRow = textRows.FirstOrDefault(s => s.StartsWith(searchText, StringComparison.InvariantCulture));
+        var matches = textRows.Where(s => s.StartsWith(searchText, StringComparison.InvariantCulture));
+        var textRow = matches.ElementAtOrDefault(matchNumber - 1);
 
         if (textRow == null)
         {
@@ -99,14 +107,15 @@ public static class StringExtensions
     /// Extracts text from the first line which matches the regex provided.
     /// </summary>
     /// <param name="regex">Regex used to pattern match. Must have the &lt;value&gt; token to indicate which value should be extracted.</param>
-    public static string ExtractFieldByRegex(this IEnumerable<string> textRows, string regex)
+    /// <param name="match">Indicate which match to return. Default = 1, first match.</param>
+    public static string ExtractFieldByRegex(this IEnumerable<string> textRows, string regex, int match = 1)
     {
         if (!regex.Contains("<value>"))
         {
             throw new ArgumentException("Regex must contain <value> token to indicate value to be returned.");
         }
 
-        var textRow = textRows.FirstOrDefault(s => Regex.IsMatch(s, regex));
+        var textRow = textRows.Where(s => Regex.IsMatch(s, regex)).ElementAtOrDefault(match - 1);
         return textRow == null ? string.Empty : Regex.Match(textRow, regex).Groups["value"].Value;
     }
 }
