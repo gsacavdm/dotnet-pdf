@@ -202,17 +202,11 @@ public class TextProcessorsTests
 
         Assert.Equal(expected.RootElement.GetProperty("DueDate").GetDateTime(), statement.DueDate);
         Assert.Equal(expected.RootElement.GetProperty("StatementDate").GetDateTime(), statement.StatementDate);
-
-        //ToDo
-        //Assert.Equal(expected.RootElement.GetProperty("PrincipalBalance").GetNullableDouble(), statement.PrincipalBalance);
-
+        Assert.Equal(expected.RootElement.GetProperty("PrincipalBalance").GetNullableDouble(), statement.PrincipalBalance);
         Assert.Equal(expected.RootElement.GetProperty("EscrowBalance").GetNullableDouble(), statement.EscrowBalance);
         Assert.Equal(expected.RootElement.GetProperty("AmountDue").GetNullableDouble(), statement.AmountDue);
-
-        //ToDo
-        //Assert.Equal(expected.RootElement.GetProperty("PrincipalDue").GetNullableDouble(), statement.PrincipalDue);
-        //Assert.Equal(expected.RootElement.GetProperty("InterestDue").GetNullableDouble(), statement.InterestDue);
-
+        Assert.Equal(expected.RootElement.GetProperty("PrincipalDue").GetNullableDouble(), statement.PrincipalDue);
+        Assert.Equal(expected.RootElement.GetProperty("InterestDue").GetNullableDouble(), statement.InterestDue);
         Assert.Equal(expected.RootElement.GetProperty("EscrowTaxesAndInsurance").GetNullableDouble(), statement.EscrowTaxesAndInsurance);
 
         Assert.Equal(expected.RootElement.GetProperty("StandardFileName").GetString(), statement.StandardFileName);

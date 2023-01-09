@@ -49,7 +49,8 @@ public class Program
             new CignaMoreInfoNeededClaimProcessor(),
             new PremeraClaimProcessor(),
             new RegenceClaimProcessor(),
-            new VspClaimProcessor()
+            new VspClaimProcessor(),
+            new TruistStatementProcessor()
         };
 
         var hasWrittenCsvHeaders = false;

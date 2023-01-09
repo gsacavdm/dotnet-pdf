@@ -20,16 +20,11 @@ public class TruistStatementProcessor : ITextProcessor
         {
             truistStatement.DueDate = text.ExtractFieldByStartsWith("Payment Due Date:").ParseDate();
             truistStatement.StatementDate = text.ExtractFieldByStartsWith("Statement Date:").ParseDate();
-
-            //ToDo
-            //truistStatement.PrincipalBalance = text.ExtractFieldNextLineByEquals("Principal balance").ParseDouble();
-
+            truistStatement.PrincipalBalance = text.ExtractFieldPreviousLineByStartsWith("Escrow balance").ParseDouble();
             truistStatement.EscrowBalance = text.ExtractFieldByStartsWith("Escrow balance").ParseDouble();
             truistStatement.AmountDue = text.ExtractFieldByStartsWith("Amount Due:").ParseDouble();
-
-            //ToDo
-            //truistStatement.PrincipalDue = text.ExtractFieldByStartsWith("Principal").ParseDouble();
-            //truistStatement.InterestDue = text.ExtractFieldByStartsWith("Interest").ParseDouble();
+            truistStatement.PrincipalDue = text.ExtractFieldByStartsWith("Principal", 2).ParseDouble();
+            truistStatement.InterestDue = text.ExtractFieldByStartsWith("Interest", 2).ParseDouble();
 
             truistStatement.EscrowTaxesAndInsurance = text.ExtractFieldByStartsWith("Escrow (taxes & insurance)").ParseDouble();
 
