@@ -22,5 +22,5 @@ public class VspClaim : DocumentBase, IDocument
         return $"{this.DateOfService.ToDateString()} {providerName} Claim Vsp {this.ClaimNumber} {this.DateOfNotice.ToDateString()}.pdf";
     }
 
-    protected override bool GetIsValid() => !string.IsNullOrEmpty(this.ProviderName);
+    protected override bool GetIsValid() => !string.IsNullOrEmpty(this.ProviderName) && !string.IsNullOrEmpty(this.ClaimNumber);
 }

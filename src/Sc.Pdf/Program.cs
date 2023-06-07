@@ -27,6 +27,8 @@ public class Program
 
         var overwriteOnMove = options.Overwrite;
 
+        var logger = new Logger(options.Verbose);
+
         var filePaths = new List<string>();
         if (!string.IsNullOrEmpty(options.PdfDirectoryPath))
         {
@@ -72,6 +74,7 @@ public class Program
                     if (textProcessor.TryParse(text, out document))
                     {
                         // No need to keep trying processors
+                        logger.Log($"Parser found, using {textProcessor.GetType().Name}");
                         break;
                     }
                 }
@@ -123,11 +126,8 @@ public class Program
             }
             catch (Exception ex)
             {
-                if (options.Verbose)
-                {
-                    Console.WriteLine($"Exception processing ${filePath}");
-                    Console.WriteLine(ex);
-                }
+                logger.Log($"Exception processing ${filePath}");
+                logger.Log(ex);
             }
         }
     }

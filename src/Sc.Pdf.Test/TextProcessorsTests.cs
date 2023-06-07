@@ -136,6 +136,48 @@ public class TextProcessorsTests
         Assert.Equal(text, claim.SourceText);
         Assert.Null(claim.SourceFileName);
     }
+    [Fact]
+    public async Task CignaClaimMoreInfoNeededProcessor2()
+    {
+        var text = PdfParsers.PdfParser.Parse("./pdfs/cigna-moreinfo2.pdf");
+        using var file = File.Open("./asserts/cigna-moreinfo2.json", FileMode.Open);
+        var expected = await JsonDocument.ParseAsync(file);
+
+        var processor = new CignaMoreInfoNeededClaimProcessor();
+        Assert.True(processor.TryParse(text, out var document));
+
+        var claim = document as CignaClaim;
+        Assert.NotNull(claim);
+
+        // To avoid CS8602: Dereference of a possibly null ref
+        if (claim == null)
+        {
+            return;
+        }
+
+        Assert.True(claim.IsValid);
+        Assert.Null(claim.ParseException);
+        Assert.Equal(CignaClaim.CignaClaimType.MoreInfoNeeded, claim.ClaimType);
+
+        Assert.Equal(expected.RootElement.GetProperty("ClaimNumber").GetString(), claim.ClaimNumber);
+        Assert.Equal(expected.RootElement.GetProperty("DateOfService").GetDateTime(), claim.DateOfService);
+        Assert.Equal(expected.RootElement.GetProperty("DateProcessed").GetDateTime(), claim.DateProcessed);
+        Assert.Equal(expected.RootElement.GetProperty("Discount").GetNullableDouble(), claim.Discount);
+        Assert.Equal(expected.RootElement.GetProperty("MemberName").GetString(), claim.MemberName);
+        Assert.Equal(expected.RootElement.GetProperty("ProviderName").GetString(), claim.ProviderName);
+
+        Assert.Equal(expected.RootElement.GetProperty("AmountNotCovered").GetNullableDouble(), claim.AmountNotCovered);
+        Assert.Equal(expected.RootElement.GetProperty("AllowedAmount").GetNullableDouble(), claim.AllowedAmount);
+        Assert.Equal(expected.RootElement.GetProperty("Copay").GetNullableDouble(), claim.Copay);
+        Assert.Equal(expected.RootElement.GetProperty("Deductible").GetNullableDouble(), claim.Deductible);
+        Assert.Equal(expected.RootElement.GetProperty("AmountPaid").GetNullableDouble(), claim.AmountPaid);
+        Assert.Equal(expected.RootElement.GetProperty("Coinsurance").GetNullableDouble(), claim.Coinsurance);
+
+        Assert.Equal(expected.RootElement.GetProperty("StandardFileName").GetString(), claim.StandardFileName);
+
+        Assert.Equal(text, claim.SourceText);
+        Assert.Null(claim.SourceFileName);
+    }
 
     [Fact]
     public async Task PremeraClaimProcessor()
