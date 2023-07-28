@@ -1,12 +1,12 @@
 # How To Run
 The simplest execution takes a file and prints out each line of text
 ```
-./Sc.Pdf -f pdfs/my-file.pdf
+./PdfParser -f pdfs/my-file.pdf
 ```
 
 The more specialized execution modes are used for parsing insurance EoBs and renaming the downloaded EoBs which have random file names to file names following my naming convention
 ```
-./Sc.Pdf -d $(pwd) -m RegenceMove
+./PdfParser -d $(pwd) -m RegenceMove
 ```
 
 # Helper Scripts
