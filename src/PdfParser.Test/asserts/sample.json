@@ -1,0 +1,15 @@
+{
+ "ClaimNumber" : "XXXXX",
+ "DateOfService" : "2024-01-01",
+ "DateProcessed" : "2024-01-30",
+ "Discount" : 1.03,
+ "MemberName" : "Foo",
+ "ProviderName" : "Bar",
+ "AmountNotCovered" : 0,
+ "AllowedAmount" : 0,
+ "Copay" : 0,
+ "Deductible" : 0,
+ "AmountPaid" : 0,
+ "Coinsurance" : 0,
+ "StandardFileName" : "2024-01-01 Bar Claim Type XXXXX 2024-01-30.pdf"
+}

@@ -52,7 +52,8 @@ public class Program
             new PremeraClaimProcessor(),
             new RegenceClaimProcessor(),
             new VspClaimProcessor(),
-            new TruistStatementProcessor()
+            new TruistStatementProcessor(),
+            new UhcClaimProcessor()
         };
 
         var hasWrittenCsvHeaders = false;
