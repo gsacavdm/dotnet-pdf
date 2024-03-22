@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using PdfParser.Documents;
 using PdfParser.Extensions;
-using PdfParser.TextProcessors;
 
 namespace PdfParser.TextProcessors;
 
@@ -22,7 +21,7 @@ public class VspClaimProcessor : ITextProcessor
             vspClaim.DateOfService = text.ExtractFieldByStartsWith("Date of Service:").ParseDate();
             vspClaim.DateOfNotice = text.ExtractFieldByStartsWith("Date of Notice:").ParseDate();
             vspClaim.ProviderName = text.ExtractFieldByStartsWith("Provider:");
-            vspClaim.MemberName = text.ExtractFieldByStartsWith("Name:").Split(" Case Number:")[0];
+            vspClaim.MemberName = text.ExtractFieldByStartsWith("Name:").Split(" Case Number:")[0].Split(" ")[0];
             vspClaim.AmountBilled = text.ExtractFieldNextLineByEquals("Billed:").ParseDouble();
             vspClaim.AmountPaid = text.ExtractFieldNextLineByEquals("Paid:").ParseDouble();
             parsedSuccessfully = true;

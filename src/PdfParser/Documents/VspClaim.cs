@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using PdfParser.Extensions;
 
 namespace PdfParser.Documents;

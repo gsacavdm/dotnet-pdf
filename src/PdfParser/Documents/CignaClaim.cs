@@ -42,6 +42,7 @@ public class CignaClaim : DocumentBase, IDocument
     protected override bool GetIsValid() =>
         !string.IsNullOrEmpty(this.ProviderName)
         && this.DateOfService != null
+        && this.DateProcessed != null
         && (
             this.AmountBilled != null
             || this.ClaimType == CignaClaimType.MoreInfoNeeded

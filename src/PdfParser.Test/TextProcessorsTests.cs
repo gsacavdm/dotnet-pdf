@@ -299,4 +299,41 @@ public class TextProcessorsTests
         Assert.Null(claim.SourceFileName);
     }
 
+    [Fact]
+    public async Task VspClaimProcessor()
+    {
+        var text = PdfParsers.PdfParser.Parse("./pdfs/vsp.pdf");
+        using var file = File.Open("./asserts/vsp.json", FileMode.Open);
+        var expected = await JsonDocument.ParseAsync(file);
+
+        var processor = new VspClaimProcessor();
+        Assert.True(processor.TryParse(text, out var document));
+
+        var claim = document as VspClaim;
+        Assert.NotNull(claim);
+
+        // To avoid CS8602: Dereference of a possibly null ref
+        if (claim == null)
+        {
+            return;
+        }
+
+        Assert.True(claim.IsValid);
+        Assert.Null(claim.ParseException);
+
+        Assert.Equal(expected.RootElement.GetProperty("ClaimNumber").GetString(), claim.ClaimNumber);
+        Assert.Equal(expected.RootElement.GetProperty("DateOfService").GetDateTime(), claim.DateOfService);
+        Assert.Equal(expected.RootElement.GetProperty("DateOfNotice").GetDateTime(), claim.DateOfNotice);
+        Assert.Equal(expected.RootElement.GetProperty("MemberName").GetString(), claim.MemberName);
+        Assert.Equal(expected.RootElement.GetProperty("ProviderName").GetString(), claim.ProviderName);
+
+        Assert.Equal(expected.RootElement.GetProperty("AmountBilled").GetNullableDouble(), claim.AmountBilled);
+        Assert.Equal(expected.RootElement.GetProperty("AmountPaid").GetNullableDouble(), claim.AmountPaid);
+
+        Assert.Equal(expected.RootElement.GetProperty("StandardFileName").GetString(), claim.StandardFileName);
+
+        Assert.Equal(text, claim.SourceText);
+        Assert.Null(claim.SourceFileName);
+    }
+
 }
