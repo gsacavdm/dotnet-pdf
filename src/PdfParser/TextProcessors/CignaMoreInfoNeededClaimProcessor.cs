@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using PdfParser.Documents;
 using PdfParser.Extensions;
-using PdfParser.TextProcessors;
 
 namespace PdfParser.TextProcessors;
 

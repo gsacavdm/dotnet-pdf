@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text.RegularExpressions;
 using PdfParser.Extensions;
 
 namespace PdfParser.Documents;
