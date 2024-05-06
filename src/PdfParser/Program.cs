@@ -53,7 +53,8 @@ public class Program
             new RegenceClaimProcessor(),
             new VspClaimProcessor(),
             new TruistStatementProcessor(),
-            new UhcClaimProcessor()
+            new UhcClaimProcessor(),
+            new RegenceEobProcessor(),
         };
 
         var hasWrittenCsvHeaders = false;

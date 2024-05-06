@@ -336,4 +336,32 @@ public class TextProcessorsTests
         Assert.Null(claim.SourceFileName);
     }
 
+    [Fact]
+    public async Task RegenceEobProcessor()
+    {
+        var text = PdfParsers.PdfParser.Parse("./pdfs/regence-eob.pdf");
+        using var file = File.Open("./asserts/regence-eob.json", FileMode.Open);
+        var expected = await JsonDocument.ParseAsync(file);
+
+        var processor = new RegenceEobProcessor();
+        Assert.True(processor.TryParse(text, out var document));
+
+        var eob = document as RegenceEob;
+        Assert.NotNull(eob);
+
+        // To avoid CS8602: Dereference of a possibly null ref
+        if (eob == null)
+        {
+            return;
+        }
+
+        Assert.True(eob.IsValid);
+        Assert.Null(eob.ParseException);
+
+        Assert.Equal(expected.RootElement.GetProperty("PrintDate").GetDateTime(), eob.PrintDate);
+        Assert.Equal(expected.RootElement.GetProperty("StandardFileName").GetString(), eob.StandardFileName);
+
+        Assert.Equal(text, eob.SourceText);
+        Assert.Null(eob.SourceFileName);
+    }
 }
