@@ -54,5 +54,5 @@ public class RegenceClaim : DocumentBase, IDocument
         return string.IsNullOrEmpty(providerName) ? string.Empty : $"{dateOfService.ToDateString()} {providerName} Claim Regence {claimNumber} {dateProcessed.ToDateString()}.pdf";
     }
 
-    protected override bool GetIsValid() => this.AmountYouOwe != null && !string.IsNullOrEmpty(this.ProviderName);
+    protected override bool GetIsValid() => this.AmountYouOwe != null && (!string.IsNullOrEmpty(this.ProviderName) || !string.IsNullOrEmpty(this.PharmacyName));
 }

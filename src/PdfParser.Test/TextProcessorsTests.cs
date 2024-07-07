@@ -373,6 +373,45 @@ public class TextProcessorsTests
         Assert.Equal(text, claim.SourceText);
         Assert.Null(claim.SourceFileName);
     }
+
+    [Fact]
+    public async Task RegenceClaimProcessorRx()
+    {
+        var text = PdfParsers.PdfParser.Parse("./pdfs/regence-rx.pdf");
+        using var file = File.Open("./asserts/regence-rx.json", FileMode.Open);
+        var expected = await JsonDocument.ParseAsync(file);
+
+        var processor = new RegenceClaimProcessor();
+        Assert.True(processor.TryParse(text, out var document));
+
+        var claim = document as RegenceClaim;
+        Assert.NotNull(claim);
+
+        // To avoid CS8602: Dereference of a possibly null ref
+        if (claim == null)
+        {
+            return;
+        }
+
+        Assert.True(claim.IsValid);
+        Assert.Null(claim.ParseException);
+
+        Assert.Equal(expected.RootElement.GetProperty("NdcNumber").GetString(), claim.NdcNumber);
+        Assert.Equal(expected.RootElement.GetProperty("DateOfFill").GetDateTime(), claim.DateOfFill);
+        Assert.Equal(expected.RootElement.GetProperty("MemberName").GetString(), claim.MemberName);
+        Assert.Equal(expected.RootElement.GetProperty("PharmacyName").GetString(), claim.PharmacyName);
+        Assert.Equal(expected.RootElement.GetProperty("AmountBilled").GetDouble(), claim.AmountBilled);
+        Assert.Equal(expected.RootElement.GetProperty("DiscountedRate").GetDouble(), claim.DiscountedRate);
+        Assert.Equal(expected.RootElement.GetProperty("AmountPaid").GetDouble(), claim.AmountPaid);
+        Assert.Equal(expected.RootElement.GetProperty("AmountYouOwe").GetDouble(), claim.AmountYouOwe);
+
+        Assert.Equal(expected.RootElement.GetProperty("StandardFileName").GetString(), claim.StandardFileName);
+
+        Assert.Equal(text, claim.SourceText);
+        Assert.Null(claim.SourceFileName);
+    }
+
+
     [Fact]
     public async Task RegenceEobProcessor()
     {
