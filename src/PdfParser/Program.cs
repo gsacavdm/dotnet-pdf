@@ -55,6 +55,7 @@ public class Program
             new TruistStatementProcessor(),
             new UhcClaimProcessor(),
             new RegenceEobProcessor(),
+            new DeltaDentalClaimProcessor(),
         };
 
         var hasWrittenCsvHeaders = false;

@@ -118,4 +118,15 @@ public static class StringExtensions
         var textRow = textRows.Where(s => Regex.IsMatch(s, regex)).ElementAtOrDefault(match - 1);
         return textRow == null ? string.Empty : Regex.Match(textRow, regex).Groups["value"].Value;
     }
+
+    /// <summary>
+    /// Removes redundant spaces from a string.
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public static string RemoveRedundantSpaces(this string s)
+    {
+        var regex = new Regex(@"\s+");
+        return regex.Replace(s, " ").Trim();
+    }
 }

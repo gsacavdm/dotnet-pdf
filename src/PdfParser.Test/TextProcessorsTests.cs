@@ -440,4 +440,45 @@ public class TextProcessorsTests
         Assert.Equal(text, eob.SourceText);
         Assert.Null(eob.SourceFileName);
     }
+
+    [Fact]
+    public async Task DeltaDentalClaimProcessor()
+    {
+        var text = PdfParsers.PdfParser.Parse("./pdfs/deltadental.pdf");
+        using var file = File.Open("./asserts/deltadental.json", FileMode.Open);
+        var expected = await JsonDocument.ParseAsync(file);
+
+        var processor = new DeltaDentalClaimProcessor();
+        Assert.True(processor.TryParse(text, out var document));
+
+        var claim = document as DeltaDentalClaim;
+        Assert.NotNull(claim);
+
+        // To avoid CS8602: Dereference of a possibly null ref
+        if (claim == null)
+        {
+            return;
+        }
+
+        Assert.True(claim.IsValid);
+        Assert.Null(claim.ParseException);
+
+        Assert.Equal(expected.RootElement.GetProperty("ClaimNumber").GetString(), claim.ClaimNumber);
+        Assert.Equal(expected.RootElement.GetProperty("DateOfService").GetDateTime(), claim.DateOfService);
+        Assert.Equal(expected.RootElement.GetProperty("DateProcessed").GetDateTime(), claim.DateProcessed);
+        Assert.Equal(expected.RootElement.GetProperty("SubmittedFee").GetDouble(), claim.SubmittedFee);
+        Assert.Equal(expected.RootElement.GetProperty("AcceptedFee").GetDouble(), claim.AcceptedFee);
+        Assert.Equal(expected.RootElement.GetProperty("MaximumContractAllowance").GetDouble(), claim.MaximumContractAllowance);
+        Assert.Equal(expected.RootElement.GetProperty("AmountAppliedToDeductible").GetDouble(), claim.AmountAppliedToDeductible);
+        Assert.Equal(expected.RootElement.GetProperty("PaidByAnotherPlan").GetDouble(), claim.PaidByAnotherPlan);
+        Assert.Equal(expected.RootElement.GetProperty("ContactBenefitLevel").GetNullableDouble(), claim.ContactBenefitLevel);
+        Assert.Equal(expected.RootElement.GetProperty("DeltaDentalPays").GetDouble(), claim.DeltaDentalPays);
+        Assert.Equal(expected.RootElement.GetProperty("PatientPays").GetDouble(), claim.PatientPays);
+        Assert.Equal(expected.RootElement.GetProperty("MemberName").GetString(), claim.MemberName);
+        Assert.Equal(expected.RootElement.GetProperty("ProviderName").GetString(), claim.ProviderName);
+        Assert.Equal(expected.RootElement.GetProperty("StandardFileName").GetString(), claim.StandardFileName);
+
+        Assert.Equal(text, claim.SourceText);
+        Assert.Null(claim.SourceFileName);
+    }
 }
