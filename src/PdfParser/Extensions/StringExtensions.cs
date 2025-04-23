@@ -122,11 +122,22 @@ public static class StringExtensions
     /// <summary>
     /// Removes redundant spaces from a string.
     /// </summary>
-    /// <param name="s"></param>
-    /// <returns></returns>
+    /// <param name="s">The string to process</param>
+    /// <returns>A string with normalized spacing</returns>
     public static string RemoveRedundantSpaces(this string s)
     {
         var regex = new Regex(@"\s+");
         return regex.Replace(s, " ").Trim();
+    }
+
+    /// <summary>
+    /// Removes all non-numeric characters from a string except spaces and dashes.
+    /// </summary>
+    /// <param name="s">The string to process</param>
+    /// <returns>The sanitized string that keeps numbers, spaces, and dashes</returns>
+    public static string RemoveNonNumeric(this string s)
+    {
+        var regex = new Regex(@"[^\d\s\-]");
+        return regex.Replace(s, "");
     }
 }
