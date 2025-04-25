@@ -140,4 +140,11 @@ public static class StringExtensions
         var regex = new Regex(@"[^\w\s\-]");
         return regex.Replace(s, "");
     }
+
+    /// <summary>
+    /// Removes all non-alphanumeric characters and converts the string to title case.
+    /// </summary>
+    /// <param name="s">The string to process</param>
+    /// <returns>A sanitized string in title case format</returns>
+    public static string SanitizeAndTitleCase(this string s) => s.RemoveNonAlphaNumeric().ToTitleCase();
 }

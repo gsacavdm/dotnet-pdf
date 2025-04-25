@@ -21,8 +21,8 @@ public class DeltaDentalClaimProcessor : ITextProcessor
             deltaDentalClaim.ClaimNumber = text.ExtractFieldByStartsWith("# 1 Claim number:");
             deltaDentalClaim.DateOfService = text.ExtractFieldByStartsWith("Date of service:").ParseDate();
             deltaDentalClaim.DateProcessed = text.ExtractFieldByStartsWith("Date:").ParseDate();
-            deltaDentalClaim.ProviderName = text.ExtractFieldByStartsWith("  Treating provider:").RemoveRedundantSpaces().RemoveNonAlphaNumeric().ToTitleCase();
-            deltaDentalClaim.MemberName = text.ExtractFieldByStartsWith("Claim for ").RemoveRedundantSpaces().RemoveNonAlphaNumeric().ToTitleCase();
+            deltaDentalClaim.ProviderName = text.ExtractFieldByStartsWith("  Treating provider:").RemoveRedundantSpaces().SanitizeAndTitleCase();
+            deltaDentalClaim.MemberName = text.ExtractFieldByStartsWith("Claim for ").RemoveRedundantSpaces().SanitizeAndTitleCase();
 
             var total = text.ExtractFieldByStartsWith("Claim total for");
             var totalParts = total.Split(" ")
