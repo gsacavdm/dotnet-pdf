@@ -18,8 +18,8 @@ public class CignaClaimProcessor : ITextProcessor
         try
         {
             cignaClaim.ClaimNumber = text.ExtractFieldNextLineByEquals("Claim # / ID").Split(" ")[0];
-            cignaClaim.ProviderName = text.ExtractFieldByStartsWith("for services provided by").ToTitleCase();
-            cignaClaim.MemberName = text.ExtractFieldByStartsWith("Claim received for ").ToTitleCase();
+            cignaClaim.ProviderName = text.ExtractFieldByStartsWith("for services provided by").RemoveNonAlphaNumeric().ToTitleCase();
+            cignaClaim.MemberName = text.ExtractFieldByStartsWith("Claim received for ").RemoveNonAlphaNumeric().ToTitleCase();
 
             var dateOfServiceLine = text.ExtractFieldNextLineByEquals("Service date");
             if (string.IsNullOrEmpty(dateOfServiceLine))

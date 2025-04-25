@@ -19,14 +19,14 @@ public class UhcClaimProcessor : ITextProcessor
         {
             uhcClaim.ClaimNumber = text.ExtractFieldByStartsWith("Claim number: ");
 
-            uhcClaim.ProviderName = text.ExtractFieldByStartsWith("Provider: ").ToTitleCase();
+            uhcClaim.ProviderName = text.ExtractFieldByStartsWith("Provider: ").RemoveNonAlphaNumeric().ToTitleCase();
             // Sometimes this line is parsed together with the "Patient Account Number" line
             if (uhcClaim.ProviderName.Contains("Patient Account Number"))
             {
                 uhcClaim.ProviderName = uhcClaim.ProviderName.Split("Patient Account Number")[0].Trim();
             }
 
-            uhcClaim.MemberName = text.ExtractFieldByStartsWith("Claim detail for ").ToTitleCase();
+            uhcClaim.MemberName = text.ExtractFieldByStartsWith("Claim detail for ").RemoveNonAlphaNumeric().ToTitleCase();
 
             uhcClaim.DateOfService = text.ExtractFieldNextLineByEquals("Services in this statement occurred")
                 .Replace(" between ", "")

@@ -19,11 +19,11 @@ public class PremeraClaimProcessor : ITextProcessor
         try
         {
 
-            premeraClaim.MemberName = text.ExtractFieldByStartsWith("for").Split(",")[0]?.ToTitleCase();
+            premeraClaim.MemberName = text.ExtractFieldByStartsWith("for").Split(",")[0]?.RemoveNonAlphaNumeric().ToTitleCase();
 
             var servicesProvidedLine = text.ExtractFieldByStartsWith("For services provided by");
             var servicesProvidedParts = servicesProvidedLine.Split(" on ");
-            premeraClaim.ProviderName = servicesProvidedParts[0].ToTitleCase();
+            premeraClaim.ProviderName = servicesProvidedParts[0].RemoveNonAlphaNumeric().ToTitleCase();
 
             // This will be inaccurate some time as there are a few EoBs that
             // cover services across multiple dates. This line will still exist

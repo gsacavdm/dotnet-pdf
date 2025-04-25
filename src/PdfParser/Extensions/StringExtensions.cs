@@ -131,13 +131,13 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Removes all non-numeric characters from a string except spaces and dashes.
+    /// Removes all non-alphanumeric characters from a string except spaces and dashes.
     /// </summary>
     /// <param name="s">The string to process</param>
     /// <returns>The sanitized string that keeps numbers, spaces, and dashes</returns>
-    public static string RemoveNonNumeric(this string s)
+    public static string RemoveNonAlphaNumeric(this string s)
     {
-        var regex = new Regex(@"[^\d\s\-]");
+        var regex = new Regex(@"[^\w\s\-]");
         return regex.Replace(s, "");
     }
 }
