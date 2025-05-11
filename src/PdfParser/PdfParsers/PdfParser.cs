@@ -11,7 +11,7 @@ public class PdfParser
 {
     public static IEnumerable<string> Parse(string pdfPath)
     {
-        List<string> text = new();
+        List<string> text = [];
 
         using var reader = new PdfReader(pdfPath);
         using var document = new PdfDocument(reader);

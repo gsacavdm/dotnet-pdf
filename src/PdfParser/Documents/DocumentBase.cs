@@ -3,31 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+#nullable enable
+
 namespace PdfParser.Documents;
 
-public abstract class DocumentBase
+public abstract class DocumentBase(IWriter? writer = null)
 {
     [CsvIgnore]
-    public IEnumerable<string> SourceText { get; set; }
+    public IEnumerable<string> SourceText { get; set; } = [];
 
     [CsvIgnore]
-    public string SourceFileName { get; set; }
+    public string SourceFileName { get; set; } = string.Empty;
     [CsvIgnore]
-    public Exception ParseException { get; set; }
+    public Exception? ParseException { get; set; }
     [CsvIgnore]
     public string StandardFileName => GetStandardFileName();
     [CsvIgnore]
     public bool IsValid => GetIsValid();
 
-    private readonly IWriter _writer;
+    private readonly IWriter? _writer = writer;
 
     protected abstract string GetStandardFileName();
     protected abstract bool GetIsValid();
-
-    public DocumentBase(IWriter writer = null)
-    {
-        _writer = writer;
-    }
 
     private IEnumerable<PropertyInfo> GetProperties()
     {
@@ -64,7 +61,7 @@ public abstract class DocumentBase
     {
         var properties = this.GetProperties();
         var propertyValues = properties
-            .Select(p => p.GetType().Name + ": " + p.GetValue(this).ToString());
+            .Select(p => p.GetType().Name + ": " + p.GetValue(this)?.ToString());
         var output = String.Join("\n", propertyValues);
 
         WriteLine(output);

@@ -6,7 +6,7 @@ namespace PdfParser.Test;
 
 public class DocumentBaseTest
 {
-    private class MockDocumentBase : DocumentBase
+    private sealed class MockDocumentBase(IWriter mockWriter) : DocumentBase(mockWriter)
     {
         public string? PropA { get; set; }
         public string? PropB { get; set; }
@@ -14,14 +14,11 @@ public class DocumentBaseTest
         public string? PropIgnore { get; set; }
         protected override string GetStandardFileName() => "MyStandardFileNames";
         protected override bool GetIsValid() => true;
-        public MockDocumentBase(IWriter mockWriter) : base(mockWriter)
-        {
-        }
     }
 
-    private class MockWriter : IWriter
+    private sealed class MockWriter : IWriter
     {
-        public List<string> FullOutput = new();
+        public List<string> FullOutput = [];
         public void WriteLine(string output) => this.FullOutput.Add(output);
     }
 

@@ -2,18 +2,13 @@ using System;
 
 namespace PdfParser;
 
-public class Logger
+public class Logger(bool isVerbose)
 {
-    public bool IsVerbose { get; init; }
-
-    public Logger(bool isVerbose)
-    {
-        this.IsVerbose = isVerbose;
-    }
+    public bool IsVerbose { get; init; } = isVerbose;
 
     public void Log(string message)
     {
-        if (this.IsVerbose)
+        if (IsVerbose)
         {
             Console.WriteLine(message);
         }
@@ -21,7 +16,7 @@ public class Logger
 
     public void Log(Exception ex)
     {
-        if (this.IsVerbose)
+        if (IsVerbose)
         {
             Console.WriteLine(ex);
         }

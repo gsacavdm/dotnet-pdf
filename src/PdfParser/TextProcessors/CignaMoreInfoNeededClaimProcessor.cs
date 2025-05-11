@@ -7,6 +7,8 @@ namespace PdfParser.TextProcessors;
 
 public class CignaMoreInfoNeededClaimProcessor : ITextProcessor
 {
+    private static readonly string[] DateSeparators = [" - ", " -"];
+
     public bool TryParse(IEnumerable<string> text, out IDocument document)
     {
         var parsedSuccessfully = false;
@@ -21,7 +23,7 @@ public class CignaMoreInfoNeededClaimProcessor : ITextProcessor
             cignaClaimMoreInfo.ProviderName = text.ExtractFieldByStartsWith("Provider:");
             cignaClaimMoreInfo.MemberName = text.ExtractFieldByStartsWith("Patient:");
             cignaClaimMoreInfo.DateOfService = text.ExtractFieldByStartsWith("Date of Service:")
-                .Split(new string[] { " - ", " -" }, StringSplitOptions.None)[0]
+                .Split(DateSeparators, StringSplitOptions.None)[0]
                 .ParseDate();
             cignaClaimMoreInfo.DateProcessed = text.ExtractFieldPreviousLineByStartsWith("Subscriber:").ParseDate();
             cignaClaimMoreInfo.ClaimType = CignaClaim.CignaClaimType.MoreInfoNeeded;

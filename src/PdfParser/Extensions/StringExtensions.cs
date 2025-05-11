@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace PdfParser.Extensions;
 
-public static class StringExtensions
+public static partial class StringExtensions
 {
     public static string ToTitleCase(this string s) => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(s.ToLower(CultureInfo.InvariantCulture));
 
@@ -106,6 +106,7 @@ public static class StringExtensions
     /// <summary>
     /// Extracts text from the first line which matches the regex provided.
     /// </summary>
+    /// <param name="textRows">List of rows to process</param>
     /// <param name="regex">Regex used to pattern match. Must have the &lt;value&gt; token to indicate which value should be extracted.</param>
     /// <param name="match">Indicate which match to return. Default = 1, first match.</param>
     public static string ExtractFieldByRegex(this IEnumerable<string> textRows, string regex, int match = 1)
@@ -119,27 +120,24 @@ public static class StringExtensions
         return textRow == null ? string.Empty : Regex.Match(textRow, regex).Groups["value"].Value;
     }
 
+    [GeneratedRegex(@"\s+", RegexOptions.Compiled)]
+    private static partial Regex MultipleSpacesRegex();
+
     /// <summary>
     /// Removes redundant spaces from a string.
     /// </summary>
     /// <param name="s">The string to process</param>
     /// <returns>A string with normalized spacing</returns>
-    public static string RemoveRedundantSpaces(this string s)
-    {
-        var regex = new Regex(@"\s+");
-        return regex.Replace(s, " ").Trim();
-    }
+    public static string RemoveRedundantSpaces(this string s) => MultipleSpacesRegex().Replace(s, " ").Trim();
 
+    [GeneratedRegex(@"[^\w\s\-]", RegexOptions.Compiled)]
+    private static partial Regex NonAlphaNumericRegex();
     /// <summary>
     /// Removes all non-alphanumeric characters from a string except spaces and dashes.
     /// </summary>
     /// <param name="s">The string to process</param>
     /// <returns>The sanitized string that keeps numbers, spaces, and dashes</returns>
-    public static string RemoveNonAlphaNumeric(this string s)
-    {
-        var regex = new Regex(@"[^\w\s\-]");
-        return regex.Replace(s, "");
-    }
+    public static string RemoveNonAlphaNumeric(this string s) => NonAlphaNumericRegex().Replace(s, "");
 
     /// <summary>
     /// Removes all non-alphanumeric characters and converts the string to title case.
